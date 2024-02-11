@@ -1,0 +1,10 @@
+Package: funomics
+Title: Aggregating Omics Data into Higher-Level Functional Representations
+Version: 0.1.0
+Authors@R: person("Elisa", "Gomez de Lope", , "elisa.gomezdelope@uni.lu", role = c("aut", "cre"),comment=c(ORCID="0000-0002-7115-7393"))
+Maintainer: Elisa Gomez de Lope <elisa.gomezdelope@uni.lu>
+Description: Aggregates or summarizes omics data into higher level functional representations such as GO terms gene sets or KEGG metabolic pathways, facilitating the analysis of functional molecular sets that allow to reduce dimensionality and provide easier and faster biological interpretations. Coordinated functional activity scores can be as informative as single molecules!
+Imports: NMF,  pathifier
+License: MIT + file LICENSE
+Encoding: UTF-8
+RoxygenNote: 7.3.1

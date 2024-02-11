@@ -1,0 +1,4 @@
+*.Rproj.user/
+*.tar.gz
+/man/*
+/NAMESPACE
