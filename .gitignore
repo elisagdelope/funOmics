@@ -1,4 +1,6 @@
+.DS_Store
 *.Rproj.user/
 *.tar.gz
 /man/*
 /NAMESPACE
+*log.text
