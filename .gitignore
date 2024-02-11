@@ -3,4 +3,4 @@
 *.tar.gz
 /man/*
 /NAMESPACE
-*log.text
+*log.txt
