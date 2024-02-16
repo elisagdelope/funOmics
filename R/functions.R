@@ -27,9 +27,6 @@
 #'
 #' @examples
 #' # Example usage:
-#' data <- matrix(rnorm(100), ncol = 10)
-#' gene_sets <- list(set1 = c("gene1", "gene2"), set2 = c("gene3", "gene4"))
-#' summarize_pathway_level(data, gene_sets, type = "median", minsize = 5)
 #' p <- 10000
 #' n <- 20
 #' X <- matrix(rnorm(p * n), nrow = p, dimnames = list(paste0("g", 1:p), paste0("s", 1:n)))
@@ -47,12 +44,6 @@
 
 #' @author Elisa Gomez de Lope
 #'
-#' @seealso
-#' - \code{\link{aggby_stat}}
-#' - \code{\link{aggby_dimred}}
-#' - \code{\link{aggby_test}}
-#' - \code{\link{aggby_pathifier}}
-#'  
 #' @keywords omics aggregation summary functional representation pathway activity-scores
 
 summarize_pathway_level = function(omicsmat, sets=NULL, type="mean", minsize = 10) {
