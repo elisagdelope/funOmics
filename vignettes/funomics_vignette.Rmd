@@ -1,0 +1,125 @@
+---
+title: "funomics"
+author: "Elisa Gómez de Lope"
+date: "2024-02-16"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction
+
+The `funomics` package is designed to aggregate omics data into higher-level functional representations. This vignette provides a detailed guide on how to use the package.
+
+# Installation
+
+`funomics` has not yet been realeased as a BioConductor package. Install the current version from the [github repository](https://github.com/elisagdelope/funomics):
+
+```{r,eval=FALSE}
+devtools::install_github("elisagdelope/funomics") 
+```
+
+# Usage
+
+## Loading the Package
+
+To use the Funomics R package, load it with the following command:
+
+```{r}
+library(funomics)
+```
+
+## Main Function: `summarize_pathway_level`
+
+You can then access the main function provided by the package, *summarize_pathway_level* with the type of pooling operator desired to be applied for each molecular set. This function has several options for adjusting parameters and settings to suit specific research questions and data types. The available aggregation operators and other parameters options are described in detail in the package documentation. You can also see the documentation for this function with the command:
+
+```{r}
+?summarize_pathway_level
+```
+
+Let's see two examples of usage, with a simulated gene expression matrix `X` of dimensions `g*s` (`g` genes and `s` samples), and a list of 100 gene sets `pathways`. The expression values are random positive values sampled from a standard normal distribution. These examples mimic gene expression data and pathway gene sets, but `funomics` can be used to aggregate other types of omics data and molecular sets, such as metabolomics or proteomics. Go to section [Real data: Where to find molecular sets?](#real-data-where-to-find-molecular-sets), to see where to find real molecular sets for different types of omics.
+
+### Generate simulation data
+
+```{r}
+# Example usage:
+set.seed(1)
+g <- 10000
+s <- 20
+X <- matrix(abs(rnorm(g * s)), nrow = g, dimnames = list(paste0("g", 1:g), paste0("s", 1:s)))
+pathways <- as.list(sample(10:100, size = 100, replace = TRUE))
+pathways <- lapply(pathways, function(s, g) paste0("g", sample(1:g, size = s, replace = FALSE)), g)
+names(pathways) <- paste0("pathway", 1:length(pathways))
+print(paste("Dimensions of omics matrix X:", dim(X)[1], "*", dim(X)[2], "; Length of molecular sets list:", length(pathways)))
+```
+
+```{r}
+print(head(X))
+```
+
+```{r}
+print(head(pathways))
+```
+
+### Example usage 1: apply `summarize_pathway_level` to summarize data with mean pooling and a minimum size of sets
+
+Now we can apply the function `summarize_pathway_level`. In this example, pathway activity is summarized using the mean pooling aggregation for those sets containing at least 12 genes. Note that you can adjust the minsize and type of aggregation as desired.
+
+```{r}
+min = 12
+pathway_activity <- summarize_pathway_level(X, pathways, type = "mean", minsize = min)
+print(paste("Pathway activity score matrix has dimensions:", nrow(pathway_activity), ",", ncol(pathway_activity)))
+```
+
+From the original matrix `X` with dimensions `g*s` (in this example, 1000 genes and 20 samples), `summarize_pathway_level` has generated a pathway-level activity score for each of the 20 samples, for 95 pathways having containing more than 12 genes. Let's see how this matrix looks like:
+
+```{r}
+print(head(pathway_activity))
+```
+
+The resulting matrix of higher-level functional representations looks very similar to the original one, except that the original had many more features (1000 instead of 100).
+
+In this example, 5 of the gene sets in `pathways` has size \< 12. You can check this by running the following command:
+
+```{r}
+length_sets <- sapply(pathways, function(p) length(p))
+short_sets <- names(length_sets[length_sets < min])
+print(length_sets[short_sets])
+```
+
+You can also check which genes were found in these sets:
+
+```{r}
+print(pathways[short_sets])
+```
+
+### Example usage 2: apply `summarize_pathway_level` to summarize data with pca pooling and no minimum size of sets
+
+Using the same matrix `X` and gene sets `pathways`, let's generate aggregated representations using dimension-reduction derived scores from the PCA. The pca-aggregated activity scores values represent the projection of the overall expression of all genes in each pathway onto the first principal component.
+
+```{r}
+pathway_activity <- summarize_pathway_level(X, pathways, type = "pca", minsize = 0)
+print(paste("Pathway activity score matrix has dimensions:", nrow(pathway_activity), ",", ncol(pathway_activity)))
+```
+
+Now from the original matrix `X` with dimensions `g*s` (genes and 20 samples), `summarize_pathway_level` has generated a pathway-level activity score for each of the 20 samples for all pathways, since the size of the molecular sets was not restricted. Let's see how this matrix looks like:
+
+```{r}
+print(head(pathway_activity))
+```
+
+# Real data: Where to find molecular sets? {#real-data-where-to-find-molecular-sets}
+
+The examples in the section above run on simulated gene expression data and pathway gene sets. Real molecular sets can be downloaded from several sources. In terms of gene sets, the Gene Ontology is a versatile resource that covers three domains: cellular components, biological processes and molecular functions. Gene sets from KEGG and reactome pathways can also be used. Explore the different releases and download the corresponding gene sets for the different types of GO terms, KEGG and reactome pathways [here](https://data.broadinstitute.org/gsea-msigdb/msigdb/release/). You can also aggregate genes into protein complexes, which you can find in the [CORUM database](https://mips.helmholtz-muenchen.de/corum/#download/).
+
+Regarding other omics types, such as metabolomics, the function `summarize_pathway_level` can be applied in a similar manner to a metabolomics matrix `X` and KEGG metabolic pathways. Metabolite sets from KEGG pathways can also be downloaded with the [KEGG API](https://www.kegg.jp/kegg/rest/keggapi.html).
+
+# Contact Information
+
+Feedback is very welcome! If you have any questions, issues, or suggestions for improving the `funomics` package, please use the GitHub issues page or contact [elisa.gomezdelope\@uni.lu](mailto:elisa.gomezdelope@uni.lu){.email}.
+
+# License
+
+The `funomics` package is released under the terms of the MIT License. See the [LICENSE](https://github.com/elisagdelope/funomics?tab=MIT-1-ov-file) file for more details.
