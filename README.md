@@ -23,8 +23,19 @@ library(funomics)
 
 You can then access the main function provided by the package, _summarize_pathway_level_, with the type of pooling operator desired to be applied for each molecular set. The available aggregation operators and other parameters options are described in detail in the package documentation.
 
+This function has several options for adjusting parameters and settings to suit specific research questions and data types. Here is an example usage, with a simulated gene expression matrix `X` of dimensions `p*n`, and a list of 100 gene sets `pathways`. Pathway activity is summarized using the mean pooling aggregation for those sets containing at least 12 genes. Note that you can adjust the minsize and type of aggregation as desired. 
 
-## Contact
+```R
+# Example usage:
+p <- 10000
+n <- 20
+X <- matrix(rnorm(p * n), nrow = p, dimnames = list(paste0("g", 1:p), paste0("s", 1:n)))
+pathways <- as.list(sample(10:100, size = 100, replace = TRUE))
+pathways <- lapply(pathways, function(n, p) paste0("g", sample(1:p, size = n, replace = FALSE)), p)
+names(pathways) <- paste0("pathways", 1:length(pathways))
+pathway_activity <- summarize_pathway_level(X, pathways, type = "mean", minsize = 12)
+```
+This example mimics gene expression data and pathway gene sets, but `funomics` can be used to aggregate other types of omics data and molecular sets. For example, it can be similarly applied to gene expression data and gene sets of GO terms or protein complexes of the CORUM database. It can also be applied to a metabolomics matrix `X` and KEGG metabolic pathways.
 
 If you have any questions or issues with the funomics R package, please contact <elisa.gomezdelope@uni.lu>. I welcome feedback and suggestions for improving the package.
 
