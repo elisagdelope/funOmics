@@ -2,7 +2,11 @@
 title: "funomics"
 author: "Elisa Gómez de Lope"
 date: "2024-02-16"
-output: html_document
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{funomics}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}
