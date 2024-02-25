@@ -32,7 +32,7 @@
 #' X <- matrix(rnorm(p * n), nrow = p, dimnames = list(paste0("g", 1:p), paste0("s", 1:n)))
 #' pathways <- as.list(sample(10:100, size = 100, replace = TRUE))
 #' pathways <- lapply(pathways, function(n, p) paste0("g", sample(1:p, size = n, replace = FALSE)), p)
-#' names(pathways) <- paste0("pathways", 1:length(pathways))
+#' names(pathways) <- paste0("pathways", seq_along(pathways))
 #' pathway_activity <- summarize_pathway_level(X, pathways, type = "mean", minsize = 12)
 
 #' @import NMF
@@ -66,9 +66,7 @@ summarize_pathway_level = function(omicsmat, sets=NULL, type="mean", minsize = 1
     # identify functional sets < minsize
     sets_lengths <- sapply(sets, function(pathway) length(pathway))
     short_sets <- names(sets_lengths[sets_lengths < minsize])
-    
     mols2remove <- setdiff(unique(unlist(sets[short_sets])), unlist(sets[setdiff(names(sets), short_sets)]))
-    
     mols <- rownames(omicsmat)[!rownames(omicsmat) %in% mols2remove]
     omicsmat <- omicsmat[match(mols, rownames(omicsmat)), ]
     sets <- sets[setdiff(names(sets), short_sets)]
@@ -78,7 +76,7 @@ summarize_pathway_level = function(omicsmat, sets=NULL, type="mean", minsize = 1
     count <- length(sets)
   } else {
     # Loop through functional sets
-    for (i in 1:length(sets)) {
+    for (i in seq_along(sets)) {
       if (i %% 100 == 0) {
         print(paste("iteration", i))
       }
@@ -114,7 +112,7 @@ summarize_pathway_level = function(omicsmat, sets=NULL, type="mean", minsize = 1
   print(paste0(count, " successful functional aggregations over minsize"))
   print(paste0(neg_count, " failed functional aggregations under minsize"))
   if (count >= 1) {
-    funmat = funmat[1:count, ]
+    funmat = funmat[seq_along(count), ]
     colnames(funmat) <- colnames(omicsmat)
     return(funmat)
   } else {
@@ -175,21 +173,21 @@ aggby_test <- function(X, aggtype, mapid, notna) {
   switch(aggtype,
          ttest = {
             path_outmat <- X[-mapid[notna],]
-            path_ttestres = sapply(1:ncol(X), function(x) {dat = t.test(X[,x], path_outmat[,x], alternative="greater"); list(dat$stat, dat$p.value)})
+            path_ttestres = sapply(seq_along(ncol(X)), function(x) {dat = t.test(X[,x], path_outmat[,x], alternative="greater"); list(dat$stat, dat$p.value)})
             path_ttest = as.numeric(path_ttestres[1,])
             #path_ttestpval = as.numeric(path_ttestres[2,])
             path_ttest
          },
          wilcox = {
             path_outmat <- X[-mapid[notna],]
-            path_wxtestres = sapply(1:ncol(X), function(x) {dat = wilcox.test(X[,x], path_outmat[,x], alternative="greater"); list(dat$stat, dat$p.value)})
+            path_wxtestres = sapply(seq_along(ncol(X)), function(x) {dat = wilcox.test(X[,x], path_outmat[,x], alternative="greater"); list(dat$stat, dat$p.value)})
             path_wxtest = as.numeric(path_wxtestres[1,])
             #path_wxtestpval = as.numeric(path_wxtestres[2,])        
             path_wxtest
          }, 
          kolmogorov = {
             path_outmat <- X[-mapid[notna],]
-            path_kstestres = sapply(1:ncol(X), function(x) {dat = ks.test(X[,x], path_outmat[,x], alternative="greater"); list(dat$stat, dat$p.value)})       
+            path_kstestres = sapply(seq_along(ncol(X)), function(x) {dat = ks.test(X[,x], path_outmat[,x], alternative="greater"); list(dat$stat, dat$p.value)})       
             path_kstest = as.numeric(path_kstestres[1,])
             #path_kstestpval = as.numeric(path_kstestres[2,])          
             path_kstest
