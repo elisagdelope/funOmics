@@ -112,7 +112,7 @@ summarize_pathway_level = function(omicsmat, sets=NULL, type="mean", minsize = 1
   print(paste0(count, " successful functional aggregations over minsize"))
   print(paste0(neg_count, " failed functional aggregations under minsize"))
   if (count >= 1) {
-    funmat = funmat[seq_along(count), ]
+    funmat = funmat[seq_len(count), ]
     colnames(funmat) <- colnames(omicsmat)
     return(funmat)
   } else {
