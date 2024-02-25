@@ -24,4 +24,4 @@ Suggests:
     rmarkdown
 VignetteBuilder: knitr
 VignetteIndexEntry: funomics_vignette Vignette
-BiocViews: Software, Transcriptomics, Metabolomics, Proteomics, Pathways, GO, KEGG
+biocViews: Software, Transcriptomics, Metabolomics, Proteomics, Pathways, GO, KEGG
