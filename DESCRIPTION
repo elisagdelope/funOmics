@@ -18,7 +18,7 @@ RoxygenNote: 7.3.1
 URL: https://github.com/elisagdelope/funomics
 BugReports: https://github.com/elisagdelope/funomics/issues
 Depends:
-    R (>= 4.0.0)
+    R (>= 4.3.0)
 Imports: NMF,  pathifier, stats
 Suggests:
     knitr,
