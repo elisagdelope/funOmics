@@ -66,7 +66,8 @@ summarize_pathway_level = function(omicsmat, sets=NULL, type="mean", minsize = 1
     # identify functional sets < minsize
     sets_lengths <- sapply(sets, function(pathway) length(pathway))
     short_sets <- names(sets_lengths[sets_lengths < minsize])
-    mols2remove <- setdiff(unique(unlist(sets[short_sets])), unlist(sets[setdiff(names(sets), short_sets)]))
+    mols2remove <- setdiff(unique(unlist(sets[short_sets])), 
+                           unlist(sets[setdiff(names(sets), short_sets)]))
     mols <- rownames(omicsmat)[!rownames(omicsmat) %in% mols2remove]
     omicsmat <- omicsmat[match(mols, rownames(omicsmat)), ]
     sets <- sets[setdiff(names(sets), short_sets)]
@@ -100,7 +101,8 @@ summarize_pathway_level = function(omicsmat, sets=NULL, type="mean", minsize = 1
       } else if (type %in% c("ttest", "wilcox", "kolmogorov")) {
         rep_vec <- aggby_test(ifunmat, type, mapid, notna)
       } else {
-        stop(paste("Aggregation type", type, "is not supported. Please check the list of supported aggregation operators."))
+        stop(paste("Aggregation type", type, "is not supported. 
+                   Please check the list of supported aggregation operators."))
       }
       
       count <- count + 1
@@ -173,21 +175,27 @@ aggby_test <- function(X, aggtype, mapid, notna) {
   switch(aggtype,
          ttest = {
             path_outmat <- X[-mapid[notna],]
-            path_ttestres = sapply(seq_along(ncol(X)), function(x) {dat = t.test(X[,x], path_outmat[,x], alternative="greater"); list(dat$stat, dat$p.value)})
+            path_ttestres = sapply(seq_len(ncol(X)), function(x) {
+              dat = t.test(X[,x], path_outmat[,x], alternative="greater"); 
+              list(dat$stat, dat$p.value)})
             path_ttest = as.numeric(path_ttestres[1,])
             #path_ttestpval = as.numeric(path_ttestres[2,])
             path_ttest
          },
          wilcox = {
             path_outmat <- X[-mapid[notna],]
-            path_wxtestres = sapply(seq_along(ncol(X)), function(x) {dat = wilcox.test(X[,x], path_outmat[,x], alternative="greater"); list(dat$stat, dat$p.value)})
+            path_wxtestres = sapply(seq_len(ncol(X)), function(x) {
+              dat = wilcox.test(X[,x], path_outmat[,x], alternative="greater"); 
+              list(dat$stat, dat$p.value)})
             path_wxtest = as.numeric(path_wxtestres[1,])
             #path_wxtestpval = as.numeric(path_wxtestres[2,])        
             path_wxtest
          }, 
          kolmogorov = {
             path_outmat <- X[-mapid[notna],]
-            path_kstestres = sapply(seq_along(ncol(X)), function(x) {dat = ks.test(X[,x], path_outmat[,x], alternative="greater"); list(dat$stat, dat$p.value)})       
+            path_kstestres = sapply(seq_len(ncol(X)), function(x) {
+              dat = ks.test(X[,x], path_outmat[,x], alternative="greater"); 
+              list(dat$stat, dat$p.value)})       
             path_kstest = as.numeric(path_kstestres[1,])
             #path_kstestpval = as.numeric(path_kstestres[2,])          
             path_kstest
