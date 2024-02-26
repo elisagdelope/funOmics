@@ -55,7 +55,7 @@ s <- 20
 X <- matrix(abs(rnorm(g * s)), nrow = g, dimnames = list(paste0("g", 1:g), paste0("s", 1:s)))
 pathways <- as.list(sample(10:100, size = 100, replace = TRUE))
 pathways <- lapply(pathways, function(s, g) paste0("g", sample(1:g, size = s, replace = FALSE)), g)
-names(pathways) <- paste0("pathway", 1:length(pathways))
+names(pathways) <- paste0("pathway", seq_along(pathways))
 print(paste("Dimensions of omics matrix X:", dim(X)[1], "*", dim(X)[2], "; Length of molecular sets list:", length(pathways)))
 ```
 
