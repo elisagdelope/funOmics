@@ -22,7 +22,9 @@ Depends:
 Imports: NMF,  pathifier, stats
 Suggests:
     knitr,
-    rmarkdown
+    rmarkdown,
+    testthat (>= 3.0.0)
 VignetteBuilder: knitr
 VignetteIndexEntry: funomics_vignette Vignette
 biocViews: Software, Transcriptomics, Metabolomics, Proteomics, Pathways, GO, KEGG
+Config/testthat/edition: 3
