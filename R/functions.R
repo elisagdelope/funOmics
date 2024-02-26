@@ -156,15 +156,15 @@ aggby_dimred <- function(X, aggtype) {
                 curfunmatfilt <- X[-rem, ]
             }
             if (length(curfunmatfilt)) {
-                pca <- prcomp(t(curfunmatfilt), retx = TRUE, scale = TRUE)
+                pca <- stats::prcomp(t(curfunmatfilt), retx = TRUE, scale = TRUE)
                 pca$x[, 1]
             } else {
                 rep(0, ncol(X))
             }
         },
         nmf = {
-            nmf_res <- nmf(X, rank = 1)
-            coef(nmf_res)
+            nmf_res <- NMF::nmf(X, rank = 1)
+            NMF::coef(nmf_res)
         }
     )
 }
