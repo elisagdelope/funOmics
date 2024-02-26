@@ -22,7 +22,7 @@ The `funomics` package is designed to aggregate omics data into higher-level fun
 `funomics` has not yet been realeased as a BioConductor package. Install the current version from the [github repository](https://github.com/elisagdelope/funomics):
 
 ```{r,eval=FALSE}
-devtools::install_github("elisagdelope/funomics") 
+devtools::install_github("elisagdelope/funomics")
 ```
 
 # Usage
@@ -40,7 +40,7 @@ library(funomics)
 You can then access the main function provided by the package, *summarize_pathway_level* with the type of pooling operator desired to be applied for each molecular set. This function has several options for adjusting parameters and settings to suit specific research questions and data types. The available aggregation operators and other parameters options are described in detail in the package documentation. You can also see the documentation for this function with the command:
 
 ```{r}
-?summarize_pathway_level
+??summarize_pathway_level
 ```
 
 Let's see two examples of usage, with a simulated gene expression matrix `X` of dimensions `g*s` (`g` genes and `s` samples), and a list of 100 gene sets `pathways`. The expression values are random positive values sampled from a standard normal distribution. These examples mimic gene expression data and pathway gene sets, but `funomics` can be used to aggregate other types of omics data and molecular sets, such as metabolomics or proteomics. Go to section [Real data: Where to find molecular sets?](#real-data-where-to-find-molecular-sets), to see where to find real molecular sets for different types of omics.
@@ -72,7 +72,7 @@ print(head(pathways))
 Now we can apply the function `summarize_pathway_level`. In this example, pathway activity is summarized using the mean pooling aggregation for those sets containing at least 12 genes. Note that you can adjust the minsize and type of aggregation as desired.
 
 ```{r}
-min = 12
+min <- 12
 pathway_activity <- summarize_pathway_level(X, pathways, type = "mean", minsize = min)
 print(paste("Pathway activity score matrix has dimensions:", nrow(pathway_activity), ",", ncol(pathway_activity)))
 ```
@@ -112,6 +112,15 @@ Now from the original matrix `X` with dimensions `g*s` (genes and 20 samples), `
 
 ```{r}
 print(head(pathway_activity))
+```
+
+### Packages & Session information
+
+The `funomics` package was developed for R version >= 4.0.3. However, current bioConductor release runs on R-4.3. See session information and loaded packages below:
+
+```{r}
+sI <- sessionInfo()
+print(sI, locale = FALSE)
 ```
 
 # Real data: Where to find molecular sets? {#real-data-where-to-find-molecular-sets}
