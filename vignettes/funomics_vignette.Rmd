@@ -15,7 +15,15 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Introduction
 
-The `funomics` package is designed to aggregate omics data into higher-level functional representations. This vignette provides a detailed guide on how to use the package.
+The `funomics` R package is a collection of functions designed to aggregate omics data into higher-level functional representations such as pathways, protein complexes, and cellular locations. This vignette provides a detailed guide on how to use the package.
+
+Omics data analysis is a critical component of modern biomedical research. The `funomics` package  provides a tool for aggregating omics data from high-throughput experiments (e.g. transcriptomics, metabolomics, proteomics) into higher-level functional activity scores that can then be used for further analysis and modeling. This capability provides a more global view of the biological systems, reduces the dimensionality, and facilitates biological interpretation of results. 
+
+The package provides different pooling operators, such as aggregation statistics (mean, median, standard deviation, min, max), dimension-reduction derived scores (pca, nmf, mds, pathifier), or test statistics (t-test, Wilcoxon test, Kolmogorov–Smirnov test) with options for adjusting parameters and settings to suit specific research questions and data types. The package is also well-documented, with detailed descriptions of each function and an example of usage. 
+
+`funomics` distinguishes itself from existing Bioconductor packages dedicated to pathway or gene set analysis such as GSEA and ORA (`clusterProfiler`, `fgsea`, `GSEAset`), or `GSVA`, by offering a comprehensive tool for directly aggregating diverse omics data types into higher-level functional representations, allowing the analysis of such functional representations as functional activity scores that can be modeled as input features for identifying candidate biomarkers, or in clustering strategies for patient identification. Unlike GSEA and ORA, which primarily focus on gene expression and predefined gene sets, funomics accommodates various omics modalities (e.g., metabolomics, transcriptomics, proteomics), and allows users to define custom molecular sets for aggregation. Additionally, funomics goes beyond `GSVA` by providing flexibility in the choice of aggregation operators, enabling users to derive interpretable functional activity scores tailored to their specific research questions. By offering a flexible and user-friendly, alternative tool for functional analysis, `funomics` aims to contribute to the diverse array of Bioconductor packages and enhance the capabilities of the community.
+
+
 
 # Installation
 
