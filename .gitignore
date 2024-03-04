@@ -7,7 +7,6 @@
 .Rhistory
 *.tar.gz
 /man/*
-/NAMESPACE
 *log.txt
 .Rproj.user
 
