@@ -3,7 +3,7 @@
 <!-- badges: start -->
 ![Active](https://img.shields.io/badge/status-active-brightgreen.svg)
 [![R-CMD-check](https://github.com/r-lib/rcmdcheck/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/r-lib/rcmdcheck/actions/workflows/R-CMD-check.yaml)
-[![license](https://img.shields.io/badge/license-MIT-blue)
+![license](https://img.shields.io/badge/license-MIT-blue)
 ![GitHub R package version](https://img.shields.io/github/r-package/v/elisagdelope/funomics)
 <!-- badges: end -->
 
