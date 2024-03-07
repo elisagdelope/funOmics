@@ -1,14 +1,33 @@
 # `funomics` Package
 
-The `funomics` R package is a collection of functions for aggregating omics data into higher-level functional representations such as pathways, protein complexes, and cellular locations. The package provides a tool for aggregating omics data from high-throughput experiments (e.g. transcriptomics, metabolomics, proteomics) into higher-level functional activity scores that can then be used for further analysis and modeling. 
+<!-- badges: start -->
+![Active](https://img.shields.io/badge/status-active-brightgreen.svg)
+[![R-CMD-check](https://github.com/r-lib/rcmdcheck/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/r-lib/rcmdcheck/actions/workflows/R-CMD-check.yaml)
+[![license](https://img.shields.io/badge/license-MIT-blue)
+![GitHub R package version](https://img.shields.io/github/r-package/v/elisagdelope/funomics)
+<!-- badges: end -->
 
+The `funomics` R package is a collection of functions for aggregating omics data into higher-level functional representations such as pathways, protein complexes, and cellular locations. The package provides a tool for aggregating omics data from high-throughput experiments (e.g. transcriptomics, metabolomics, proteomics) into higher-level functional activity scores that can then be used for further analysis and modeling. 
 The package provides different pooling operators, such as aggregation statistics (mean, median, standard deviation, min, max), dimension-reduction derived scores (pca, nmf, mds, pathifier), or test statistics (t-test, Wilcoxon test, Kolmogorov–Smirnov test) with options for adjusting parameters and settings to suit specific research questions and data types. The package is also well-documented, with detailed descriptions of each function and an example of usage.
+
 
 ## Installation
 
-The package will soon be submitted to the BioConductor repository. Until its release, you can use the following command to install the `funomics` package:
+Install `funomics` from [Bioconductor](https://www.bioconductor.org/) (release 3.19 onwards) via:
+
+``` r
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("funomics")
+```
+
+or the pre-release and latest development version from [GitHub](https://github.com/elisagdelope/funomics):
 
 ```R
+if (!require("devtools", quietly = TRUE))
+    install.packages("devtools")
+
 devtools::install_github("elisagdelope/funomics") 
 ```
 
@@ -35,6 +54,7 @@ pathways <- lapply(pathways, function(n, p) paste0("g", sample(1:p, size = n, re
 names(pathways) <- paste0("pathways", 1:length(pathways))
 pathway_activity <- summarize_pathway_level(X, pathways, type = "mean", minsize = 12)
 ```
+
 This example mimics gene expression data and pathway gene sets, but `funomics` can be used to aggregate other types of omics data and molecular sets. For example, it can be similarly applied to gene expression data and gene sets of GO terms or protein complexes of the CORUM database. It can also be applied to a metabolomics matrix `X` and KEGG metabolic pathways.
 
 If you have any questions or issues with the funomics R package, please contact <elisa.gomezdelope@uni.lu>. I welcome feedback and suggestions for improving the package.
