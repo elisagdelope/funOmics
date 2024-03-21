@@ -1,4 +1,4 @@
-# `funomics` Package
+# `funOmics` Package
 
 <!-- badges: start -->
 ![Active](https://img.shields.io/badge/status-active-brightgreen.svg)
@@ -7,19 +7,19 @@
 ![GitHub R package version](https://img.shields.io/github/r-package/v/elisagdelope/funomics)
 <!-- badges: end -->
 
-The `funomics` R package is a collection of functions for aggregating omics data into higher-level functional representations such as pathways, protein complexes, and cellular locations. The package provides a tool for aggregating omics data from high-throughput experiments (e.g. transcriptomics, metabolomics, proteomics) into higher-level functional activity scores that can then be used for further analysis and modeling. 
+The `funOmics` R package is a collection of functions for aggregating omics data into higher-level functional representations such as pathways, protein complexes, and cellular locations. The package provides a tool for aggregating omics data from high-throughput experiments (e.g. transcriptomics, metabolomics, proteomics) into higher-level functional activity scores that can then be used for further analysis and modeling. 
 The package provides different pooling operators, such as aggregation statistics (mean, median, standard deviation, min, max), dimension-reduction derived scores (pca, nmf, mds, pathifier), or test statistics (t-test, Wilcoxon test, Kolmogorov–Smirnov test) with options for adjusting parameters and settings to suit specific research questions and data types. The package is also well-documented, with detailed descriptions of each function and an example of usage.
 
 
 ## Installation
 
-Install `funomics` from [Bioconductor](https://www.bioconductor.org/) (release 3.19 onwards) via:
+Install `funOmics` from [Bioconductor](https://www.bioconductor.org/) (release 3.19 onwards) via:
 
 ``` r
 if (!require("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 
-BiocManager::install("funomics")
+BiocManager::install("funOmics")
 ```
 
 or the pre-release and latest development version from [GitHub](https://github.com/elisagdelope/funomics):
@@ -37,7 +37,7 @@ devtools::install_github("elisagdelope/funomics")
 To use the Funomics R package, you can load the package using the following command:
 
 ```R
-library(funomics)
+library(funOmics)
 ```
 
 You can then access the main function provided by the package, _summarize_pathway_level_, with the type of pooling operator desired to be applied for each molecular set. The available aggregation operators and other parameters options are described in detail in the package documentation.
@@ -55,14 +55,14 @@ names(pathways) <- paste0("pathways", 1:length(pathways))
 pathway_activity <- summarize_pathway_level(X, pathways, type = "mean", minsize = 12)
 ```
 
-This example mimics gene expression data and pathway gene sets, but `funomics` can be used to aggregate other types of omics data and molecular sets. For example, it can be similarly applied to gene expression data and gene sets of GO terms or protein complexes of the CORUM database. It can also be applied to a metabolomics matrix `X` and KEGG metabolic pathways.
+This example mimics gene expression data and pathway gene sets, but `funOmics` can be used to aggregate other types of omics data and molecular sets. For example, it can be similarly applied to gene expression data and gene sets of GO terms or protein complexes of the CORUM database. It can also be applied to a metabolomics matrix `X` and KEGG metabolic pathways.
 
-If you have any questions or issues with the funomics R package, please contact <elisa.gomezdelope@uni.lu>. I welcome feedback and suggestions for improving the package.
+If you have any questions or issues with the `funOmics` R package, please contact <elisa.gomezdelope@uni.lu>. I welcome feedback and suggestions for improving the package.
 
 
 ## Disclaimer
 
-The R package `funomics` implements functions for aggregating omics data into higher-level functional representations.
+The R package `funOmics` implements functions for aggregating omics data into higher-level functional representations.
 
 Copyright &copy; 2024 Elisa Gómez de Lope, University of Luxembourg, Luxembourg Centre for Systems Biomedicine (LCSB), Biomedical Data Science (BDS)
 

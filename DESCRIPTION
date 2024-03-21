@@ -1,10 +1,10 @@
-Package: funomics
+Package: funOmics
 Title: Aggregating Omics Data into Higher-Level Functional Representations
 Version: 0.99.0
 Authors@R: c(
            person("Elisa", "Gomez de Lope", role = c("aut", "cre"), email = "elisa.gomezdelope@uni.lu",comment=c(ORCID="0000-0002-7115-7393")),
            person("Enrico", "Glaab", role = "ctb", email = "enrico.glaab@uni.lu", comment = c(ORCID="0000-0003-3977-7469")))
-Description: The 'funomics' package ggregates or summarizes omics data into 
+Description: The 'funOmics' package ggregates or summarizes omics data into 
             higher level functional representations such as GO terms gene sets 
             or KEGG metabolic pathways. The aggregated data matrix represents
             functional activity scores that facilitate the analysis of 

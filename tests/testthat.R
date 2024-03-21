@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(funomics)
+library(funOmics)
 
-test_check("funomics")
+test_check("funOmics")

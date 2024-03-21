@@ -25,3 +25,5 @@ test_that("summarize_pathway_level works as expected", {
     result_ttest <- summarize_pathway_level(X, pathways, type = "ttest")
     expect_true(!is.null(result_ttest), "Should return a non-null result for ttest aggregation.")
 })
+
+test_dir("tests/")
