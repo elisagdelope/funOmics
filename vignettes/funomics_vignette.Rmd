@@ -1,10 +1,10 @@
 ---
-title: "funomics"
+title: "funOmics"
 author: "Elisa Gómez de Lope"
 date: "2024-02-16"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{funomics}
+  %\VignetteIndexEntry{funOmics}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -15,32 +15,32 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Introduction
 
-The `funomics` R package is a collection of functions designed to aggregate omics data into higher-level functional representations such as pathways, protein complexes, and cellular locations. This vignette provides a detailed guide on how to use the package.
+The `funOmics` R package is a collection of functions designed to aggregate omics data into higher-level functional representations such as pathways, protein complexes, and cellular locations. This vignette provides a detailed guide on how to use the package.
 
-Omics data analysis is a critical component of modern biomedical research. The `funomics` package provides a tool for aggregating omics data from high-throughput experiments (e.g. transcriptomics, metabolomics, proteomics) into higher-level functional activity scores that can then be used for further analysis and modeling. This capability provides a more global view of the biological systems, reduces the dimensionality, and facilitates biological interpretation of results.
+Omics data analysis is a critical component of modern biomedical research. The `funOmics` package provides a tool for aggregating omics data from high-throughput experiments (e.g. transcriptomics, metabolomics, proteomics) into higher-level functional activity scores that can then be used for further analysis and modeling. This capability provides a more global view of the biological systems, reduces the dimensionality, and facilitates biological interpretation of results.
 
 The package provides different pooling operators, such as aggregation statistics (mean, median, standard deviation, min, max), dimension-reduction derived scores (pca, nmf, mds, pathifier), or test statistics (t-test, Wilcoxon test, Kolmogorov–Smirnov test) with options for adjusting parameters and settings to suit specific research questions and data types. The package is also well-documented, with detailed descriptions of each function and an example of usage.
 
-`funomics` distinguishes itself from existing Bioconductor packages dedicated to pathway or gene set analysis such as GSEA and ORA (`clusterProfiler`, `fgsea`, `GSEAset`), or `GSVA`, by offering a comprehensive tool for directly aggregating diverse omics data types into higher-level functional representations, allowing the analysis of such functional representations as functional activity scores that can be modeled as input features for identifying candidate biomarkers, or in clustering strategies for patient identification. Unlike GSEA and ORA, which primarily focus on gene expression and predefined gene sets, funomics accommodates various omics modalities (e.g., metabolomics, transcriptomics, proteomics), and allows users to define custom molecular sets for aggregation. Additionally, funomics goes beyond `GSVA` by providing flexibility in the choice of aggregation operators, enabling users to derive interpretable functional activity scores tailored to their specific research questions. By offering a flexible and user-friendly, alternative tool for functional analysis, `funomics` aims to contribute to the diverse array of Bioconductor packages and enhance the capabilities of the community.
+`funOmics` distinguishes itself from existing Bioconductor packages dedicated to pathway or gene set analysis such as GSEA and ORA (`clusterProfiler`, `fgsea`, `GSEAset`), or `GSVA`, by offering a comprehensive tool for directly aggregating diverse omics data types into higher-level functional representations, allowing the analysis of such functional representations as functional activity scores that can be modeled as input features for identifying candidate biomarkers, or in clustering strategies for patient identification. Unlike GSEA and ORA, which primarily focus on gene expression and predefined gene sets, `funOmics` accommodates various omics modalities (e.g., metabolomics, transcriptomics, proteomics), and allows users to define custom molecular sets for aggregation. Additionally, `funOmics` goes beyond `GSVA` by providing flexibility in the choice of aggregation operators, enabling users to derive interpretable functional activity scores tailored to their specific research questions. By offering a flexible and user-friendly, alternative tool for functional analysis, `funOmics` aims to contribute to the diverse array of Bioconductor packages and enhance the capabilities of the community.
 
 # Installation
 
-Install `funomics` from [Bioconductor](https://www.bioconductor.org/) (release 3.19 onwards) via:
+Install `funOmics` from [Bioconductor](https://www.bioconductor.org/) (release 3.19 onwards) via:
 
 ``` {r,eval=FALSE}
 if (!require("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 
-BiocManager::install("funomics")
+BiocManager::install("funOmics")
 ```
 
-or the pre-release and latest development version from [GitHub](https://github.com/elisagdelope/funomics):
+or the pre-release and latest development version from [GitHub](https://github.com/elisagdelope/funOmics):
 
 ```{r,eval=FALSE}
 if (!require("devtools", quietly = TRUE))
     install.packages("devtools")
 
-devtools::install_github("elisagdelope/funomics") 
+devtools::install_github("elisagdelope/funOmics") 
 ```
 
 
@@ -51,7 +51,7 @@ devtools::install_github("elisagdelope/funomics")
 To use the Funomics R package, load it with the following command:
 
 ```{r}
-library(funomics)
+library(funOmics)
 ```
 
 ## Main Function: `summarize_pathway_level`
@@ -59,10 +59,10 @@ library(funomics)
 You can then access the main function provided by the package, *summarize_pathway_level* with the type of pooling operator desired to be applied for each molecular set. This function has several options for adjusting parameters and settings to suit specific research questions and data types. The available aggregation operators and other parameters options are described in detail in the package documentation. You can also see the documentation for this function with the command:
 
 ```{r}
-?funomics::summarize_pathway_level
+?funOmics::summarize_pathway_level
 ```
 
-Let's see two examples of usage, with a simulated gene expression matrix `X` of dimensions `g*s` (`g` genes and `s` samples), and a list of 100 gene sets `pathways`. The expression values are random positive values sampled from a standard normal distribution. These examples mimic gene expression data and pathway gene sets, but `funomics` can be used to aggregate other types of omics data and molecular sets, such as metabolomics or proteomics. Go to section [Real data: Where to find molecular sets?](#real-world-data-where-to-find-molecular-sets), to see where to find real molecular sets for different types of omics.
+Let's see two examples of usage, with a simulated gene expression matrix `X` of dimensions `g*s` (`g` genes and `s` samples), and a list of 100 gene sets `pathways`. The expression values are random positive values sampled from a standard normal distribution. These examples mimic gene expression data and pathway gene sets, but `funOmics` can be used to aggregate other types of omics data and molecular sets, such as metabolomics or proteomics. Go to section [Real data: Where to find molecular sets?](#real-world-data-where-to-find-molecular-sets), to see where to find real molecular sets for different types of omics. Note that if your actual omics data is in `SummarizedExperiment` format, the assay matrix can easily be retrieved as a matrix format (`assay(SEobject)`).
 
 ### Generate simulation data
 
@@ -135,7 +135,7 @@ print(head(pathway_activity))
 
 ### Packages & Session information
 
-The `funomics` package was developed for R version \>= 4.0.3. However, [BioConductor](https://www.bioconductor.org/) release 3.19 runs on R-4.4. See session information and loaded packages below:
+The `funOmics` package was developed for R version \>= 4.0.3. However, [BioConductor](https://www.bioconductor.org/) release 3.19 runs on R-4.4. See session information and loaded packages below:
 
 ```{r}
 sI <- sessionInfo()
@@ -170,7 +170,7 @@ head(sd_gocc_expr)
 
 A GO cellular compartments activity score is generated via the sd-pooling signal of its gene components.
 
-Similarly, `funomics` is interoperable with other standard Bioconductor classes for gene sets like KEGGREST. See the code snippet below to retrieve KEGG gene sets for humans:
+Similarly, `funOmics` is interoperable with other standard Bioconductor classes for gene sets like KEGGREST. See the code snippet below to retrieve KEGG gene sets for humans:
 
 ```{r}
 library("KEGGREST")
@@ -207,8 +207,8 @@ Note that these are just some examples, and you can apply similar procedures for
 
 # Contact Information
 
-Feedback is very welcome! If you have any questions, issues, or suggestions for improving the `funomics` package, please use the GitHub issues page or contact [elisa.gomezdelope\@uni.lu](mailto:elisa.gomezdelope@uni.lu){.email}.
+Feedback is very welcome! If you have any questions, issues, or suggestions for improving the `funOmics` package, please use the GitHub issues page or contact [elisa.gomezdelope\@uni.lu](mailto:elisa.gomezdelope@uni.lu){.email}.
 
 # License
 
-The `funomics` package is released under the terms of the MIT License. See the [LICENSE](https://github.com/elisagdelope/funomics?tab=MIT-1-ov-file) file for more details.
+The `funOmics` package is released under the terms of the MIT License. See the [LICENSE](https://github.com/elisagdelope/funomics?tab=MIT-1-ov-file) file for more details.
