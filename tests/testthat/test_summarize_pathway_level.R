@@ -26,4 +26,3 @@ test_that("summarize_pathway_level works as expected", {
     expect_true(!is.null(result_ttest), "Should return a non-null result for ttest aggregation.")
 })
 
-test_dir("tests/")
