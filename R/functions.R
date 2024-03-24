@@ -288,7 +288,7 @@ get_kegg_sets <- function(organism="hsa", geneid_type="entrez") {
   # get pathway names
   kegg_pathways <- keggList("pathway", organism) %>% 
     tibble(pathway = names(.), description = .) %>%
-    mutate(description = unname(description))
+    dplyr::mutate(description = unname(description))
   org_substring <- str_match(kegg_pathways$description, ".* - (.*)")[, 2]
   if (length(unique(org_substring)) == 1) {
     kegg_pathways$description <- str_extract(kegg_pathways$description, "^.*(?= - )")
@@ -296,7 +296,7 @@ get_kegg_sets <- function(organism="hsa", geneid_type="entrez") {
   if (organism=="hsa") {
     # get gene symbols and ensembl ids using the gene ids (entrez IDs) retrieved from kegg
     path_entrez <- path_entrez %>%
-      mutate(
+      dplyr::mutate(
         symbol = suppressMessages(unname(mapIds(org.Hs.eg.db, geneID, "SYMBOL", "ENTREZID"))),
         ensembl = suppressMessages(unname(mapIds(org.Hs.eg.db, geneID, "ENSEMBL", "ENTREZID")))
       ) 
