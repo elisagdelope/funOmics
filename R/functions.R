@@ -230,3 +230,93 @@ aggby_pathifier <- function(X, gs) {
     rownames(pathifier_scores) <- names(pathifier_agg$scores)
     return(pathifier_scores)
 }
+
+
+#' Retrieves KEGG pathway gene sets for a specified organism and gene ID type.
+#'
+#' This function retrieves KEGG pathway gene sets for a specified organism. 
+#' It fetches all pathways available for the specified organism from the KEGG database and maps the genes involved in each pathway. 
+#' Currently, the function only supports choice of gene identifiers (entrez IDs, gene symbols or Ensembl IDs) for Homo sapiens (organism = "hsa") using the org.Hs.eg.db package.
+#' 
+#' @param organism The organism abbreviation for which KEGG pathway gene sets are to be retrieved (e.g., "ecj" for E. coli). Default is "hsa" (Homo sapiens).
+#' @param geneid_type The type of gene IDs to provide. Default is "entrez"; options are "entrez", "symbol", or "ensembl". 
+#'                   This parameter is only used when the organism is "hsa" (Homo sapiens).
+#'
+#' @return A list where each element represents a KEGG pathway gene set. The names of the list correspond to the pathway names.
+#'
+#' @export
+#'
+#' @examples
+#' # Retrieve KEGG pathway gene sets for Homo sapiens with entrez IDs (default)
+#' hsa_kegg_sets_entrez <- get_kegg_sets()
+#' 
+#' # Retrieve KEGG molecular sets using gene symbols
+#' hsa_kegg_sets_symbol <- get_kegg_sets(geneid_type = "symbol")
+#'
+#' # Retrieve KEGG molecular sets using Ensembl IDs
+#' hsa_kegg_sets_ensembl <- get_kegg_sets(geneid_type = "ensembl")
+#'
+#' # Retrieve KEGG pathway gene sets for another organism (e.g., Escherichia coli)
+#' ecoli_kegg_sets <- get_kegg_sets(organism = "ecj")
+#' 
+#' @importFrom dplyr select left_join %>% tibble
+#' @importFrom org.Hs.eg.db mapIds
+#' @importFrom KEGGREST keggLink keggList
+#' @importFrom stringr str_match str_extract
+#' @importFrom utils gsub
+#'
+#' @seealso \code{\link{summarize_pathway_level}}
+#' @seealso \code{\link{keggLink}}, \code{\link{keggList}}
+#' @seealso \code{\link{mapIds}}
+#' 
+get_kegg_sets <- function(organism="hsa", geneid_type="entrez") {
+  # checks
+  check_parameter(organism, "organism", "character")
+  check_parameter(geneid_type, "geneid_type", "character")
+  if (!(geneid_type %in% c("entrez" , "symbol", "ensembl"))) {
+    stop("Invalid gene ID type. Please use one of: ", paste(c("entrez" , "symbol", "ensembl"), collapse = ", "))
+  }
+
+  # get all pathways and their entrez gene ids
+  path_entrez <- tryCatch({ keggLink("pathway", organism) %>% 
+    tibble(pathway = gsub("path:", "", .), geneID = sub(paste0(organism, ":"), "", names(.))) %>%
+    dplyr::select(-.)
+  }, error = function(e) {
+    stop("Invalid organism abbreviation or unsupported organism: ", organism)
+  })
+  
+  # get pathway names
+  kegg_pathways <- keggList("pathway", organism) %>% 
+    tibble(pathway = names(.), description = .) %>%
+    mutate(description = unname(description))
+  org_substring <- str_match(kegg_pathways$description, ".* - (.*)")[, 2]
+  if (length(unique(org_substring)) == 1) {
+    kegg_pathways$description <- str_extract(kegg_pathways$description, "^.*(?= - )")
+  }
+  if (organism=="hsa") {
+    # get gene symbols and ensembl ids using the gene ids (entrez IDs) retrieved from kegg
+    path_entrez <- path_entrez %>%
+      mutate(
+        symbol = suppressMessages(unname(mapIds(org.Hs.eg.db, geneID, "SYMBOL", "ENTREZID"))),
+        ensembl = suppressMessages(unname(mapIds(org.Hs.eg.db, geneID, "ENSEMBL", "ENTREZID")))
+      ) 
+  }
+  
+  # merge
+  KEGG_pathways <- left_join(kegg_pathways, path_entrez, by = "pathway")
+  
+  # Split by gene id type if hsa
+  if (organism=="hsa") {
+    kegg_sets <- switch(geneid_type,
+                        "entrez" = split(KEGG_pathways$geneID, KEGG_pathways$description),
+                        "symbol" = split(KEGG_pathways$symbol, KEGG_pathways$description),
+                        "ensembl" = split(KEGG_pathways$ensembl, KEGG_pathways$description),
+                        stop("Invalid geneid_type. Must be 'entrez', 'symbol', or 'ensembl'.")
+    )
+  }
+  else {
+    kegg_sets <- split(KEGG_pathways$geneID, KEGG_pathways$description)
+  }
+  return(kegg_sets)
+}
+
