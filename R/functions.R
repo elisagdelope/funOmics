@@ -260,10 +260,10 @@ aggby_pathifier <- function(X, gs) {
 #' ecoli_kegg_sets <- get_kegg_sets(organism = "ecj")
 #' 
 #' @importFrom dplyr select left_join %>% tibble
-#' @importFrom org.Hs.eg.db mapIds
+#' @importFrom AnnotationDbi mapIds
+#' @import org.Hs.eg.db
 #' @importFrom KEGGREST keggLink keggList
 #' @importFrom stringr str_match str_extract
-#' @importFrom utils gsub
 #'
 #' @seealso \code{\link{summarize_pathway_level}}
 #' @seealso \code{\link{keggLink}}, \code{\link{keggList}}
