@@ -67,4 +67,3 @@ The R package `funOmics` implements functions for aggregating omics data into hi
 Copyright &copy; 2024 Elisa Gómez de Lope, University of Luxembourg, Luxembourg Centre for Systems Biomedicine (LCSB), Biomedical Data Science (BDS)
 
 This program is free software: you can redistribute it and/or modify it under the terms of the MIT License. This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; including but not limited to the warranties of MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, and NONINFRINGEMENT. See the terms of the MIT License for more details.
-
