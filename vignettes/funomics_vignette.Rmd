@@ -19,7 +19,7 @@ The `funOmics` R package is a collection of functions designed to aggregate omic
 
 Omics data analysis is a critical component of modern biomedical research. The `funOmics` package provides a tool for aggregating omics data from high-throughput experiments (e.g. transcriptomics, metabolomics, proteomics) into higher-level functional activity scores that can then be used for further analysis and modeling. This capability provides a more global view of the biological systems, reduces the dimensionality, and facilitates biological interpretation of results.
 
-The package provides different pooling operators, such as aggregation statistics (mean, median, standard deviation, min, max), dimension-reduction derived scores (pca, nmf, mds, pathifier), or test statistics (t-test, Wilcoxon test, Kolmogorov–Smirnov test) with options for adjusting parameters and settings to suit specific research questions and data types. The package is also well-documented, with detailed descriptions of each function and an example of usage.
+The package provides different pooling operators, such as aggregation statistics (mean, median, standard deviation, min, max), dimension-reduction derived scores (PCA, NMF, MDS, _pathifier_ deregulation scores from the `pathifier` package), or test statistics (t-test, Wilcoxon test, Kolmogorov–Smirnov test) with options for adjusting parameters and settings to suit specific research questions and data types. The package is also well-documented, with detailed descriptions of each function and several examples of usage. 
 
 `funOmics` distinguishes itself from existing Bioconductor packages dedicated to pathway or gene set analysis such as GSEA and ORA (`clusterProfiler`, `fgsea`, `GSEAset`), or `GSVA`, by offering a comprehensive tool for directly aggregating diverse omics data types into higher-level functional representations, allowing the analysis of such functional representations as functional activity scores that can be modeled as input features for identifying candidate biomarkers, or in clustering strategies for patient identification. Unlike GSEA and ORA, which primarily focus on gene expression and predefined gene sets, `funOmics` accommodates various omics modalities (e.g., metabolomics, transcriptomics, proteomics), and allows users to define custom molecular sets for aggregation. Additionally, `funOmics` goes beyond `GSVA` by providing flexibility in the choice of aggregation operators, enabling users to derive interpretable functional activity scores tailored to their specific research questions. By offering a flexible and user-friendly, alternative tool for functional analysis, `funOmics` aims to contribute to the diverse array of Bioconductor packages and enhance the capabilities of the community.
 
@@ -48,7 +48,7 @@ devtools::install_github("elisagdelope/funOmics")
 
 ## Loading the Package
 
-To use the Funomics R package, load it with the following command:
+To use the `funOmics` R package, load it with the following command:
 
 ```{r}
 library(funOmics)
@@ -62,7 +62,7 @@ You can then access the main function provided by the package, *summarize_pathwa
 ?funOmics::summarize_pathway_level
 ```
 
-Let's see two examples of usage, with a simulated gene expression matrix `X` of dimensions `g*s` (`g` genes and `s` samples), and a list of 100 gene sets `pathways`. The expression values are random positive values sampled from a standard normal distribution. These examples mimic gene expression data and pathway gene sets, but `funOmics` can be used to aggregate other types of omics data and molecular sets, such as metabolomics or proteomics. Go to section [Real data: Where to find molecular sets?](#real-world-data-where-to-find-molecular-sets), to see where to find real molecular sets for different types of omics. Note that if your actual omics data is in `SummarizedExperiment` format, the assay matrix can easily be retrieved as a matrix format (`assay(SEobject)`).
+Let's see two examples of usage, with a simulated gene expression matrix `X` of dimensions `g*s` (`g` genes and `s` samples), and a list of 100 gene sets `pathways`. The expression values are random positive values sampled from a standard normal distribution. These examples mimic gene expression data and pathway gene sets, but `funOmics` can be used to aggregate other types of omics data and molecular sets, such as metabolomics or proteomics. Go to section [Real data: Where to find molecular sets?](#real-world-data-where-to-find-molecular-sets), to see where to find real molecular sets for different types of omics. Note that if your actual omics data is in `SummarizedExperiment` format, the assay matrix can easily be retrieved as a matrix format (`assay(SEobject)`, see [Example 3](#real-world-data-where-to-find-molecular-sets)).
 
 ### Generate simulation data
 
@@ -118,7 +118,7 @@ You can also check which genes were found in these sets:
 print(pathways[short_sets])
 ```
 
-### Example usage 2: apply `summarize_pathway_level` to summarize data with pca pooling and no minimum size of sets
+### Example usage 2: apply `summarize_pathway_level` to summarize data with PCA pooling and no minimum size of sets
 
 Using the same matrix `X` and gene sets `pathways`, let's generate aggregated representations using dimension-reduction derived scores from the PCA. The pca-aggregated activity scores values represent the projection of the overall expression of all genes in each pathway onto the first principal component.
 
@@ -133,7 +133,45 @@ Now from the original matrix `X` with dimensions `[g,s]` (1000 genes and 20 samp
 print(head(pathway_activity))
 ```
 
-### Packages & Session information
+
+
+## Function `get_kegg_sets`
+
+The function `get_kegg_sets` retrieves KEGG pathway gene sets for a specified organism.  It fetches all pathways available for the specified organism from the KEGG database and maps the genes involved in each pathway. Currently, the function only supports choice of gene identifiers (entrez IDs, gene symbols and Ensembl IDs) for Homo sapiens (organism = "hsa") using the `org.Hs.eg.db` package.
+
+`get_kegg_sets` has two parameters: `organism` and `geneid_type`. The parameter `organism` provides the organism abbreviation for which KEGG pathway gene sets are to be retrieved (e.g., "ecj" for E. coli). Default is "hsa" (Homo sapiens). `geneid_type` provides the type of gene IDs to provide and is only used when the organism is "hsa" (Homo sapiens). The default is "entrez"; options are "entrez", "symbol", or "ensembl". 
+
+The function `get_kegg_sets()` returns a list where each element represents a KEGG pathway gene set (i.e., a list of lists). The names of the inner lists correspond to the pathway names.
+
+### Examples usage
+
+Let's retrieve KEGG pathway gene sets for Homo sapiens with entrez IDs (default):
+```{r}
+hsa_kegg_sets_entrez <- get_kegg_sets()
+head(hsa_kegg_sets_entrez)
+```
+
+The KEGG molecular sets can also be retrieved for gene symbols with the `geneid_type = "symbol"` flag:
+```{r}
+hsa_kegg_sets_symbol <- get_kegg_sets(geneid_type = "symbol")
+hsa_kegg_sets_symbol[1]
+```
+
+And similarly for Ensembl IDs with the `geneid_type = "ensembl"` flag:
+```{r}
+hsa_kegg_sets_ensembl <- get_kegg_sets(geneid_type = "ensembl")
+hsa_kegg_sets_ensembl[1]
+```
+
+`get_kegg_sets` can also be used to retrieve KEGG pathway gene sets for another organism (e.g., Escherichia coli). Note that the choice of gene identifier is currently not supported for organisms other than Homo sapiens, hence the gene type is that stored by the KEGG database.
+```{r}
+ecoli_kegg_sets <- get_kegg_sets(organism = "ecj")
+head(ecoli_kegg_sets)
+```
+
+
+
+## Packages & Session information
 
 The `funOmics` package was developed for R version \>= 4.0.3. However, [BioConductor](https://www.bioconductor.org/) release 3.19 runs on R-4.4. See session information and loaded packages below:
 
@@ -142,15 +180,14 @@ sI <- sessionInfo()
 print(sI, locale = FALSE)
 ```
 
-# Real-world data: Where to find molecular sets? {#real-world-data-where-to-find-molecular-sets}
+# Real-world data: Where to find molecular sets beyond KEGG? {#real-world-data-where-to-find-molecular-sets}
 
-The examples in the section above run on simulated gene expression data and pathway gene sets. Real-world molecular sets can be downloaded from several sources. In terms of gene sets, the Gene Ontology is a versatile resource that covers three domains: cellular components, biological processes and molecular functions. Gene sets from KEGG and reactome pathways can also be used. Explore the different releases and download the corresponding gene sets for the different types of GO terms, KEGG and reactome pathways [here](https://data.broadinstitute.org/gsea-msigdb/msigdb/release/). You can also aggregate genes into protein complexes, which you can find in the [CORUM database](https://mips.helmholtz-muenchen.de/corum/#download/).
+The package `funOmics` interoperates with KEGGREST to retrieve molecular sets from the KEGG through the function `get_kegg_sets` (see description and example above). Other real-world molecular sets can be downloaded from several sources. In terms of gene sets, the Gene Ontology is a versatile resource that covers three domains: cellular components, biological processes and molecular functions. Reactome pathways can also be used to generate higher-level functional representations from omics data. Explore the different releases and download the corresponding gene sets for the different types of GO terms, and reactome pathways [here](https://data.broadinstitute.org/gsea-msigdb/msigdb/release/). You can also aggregate genes into protein complexes, which you can find in the [CORUM database](https://mips.helmholtz-muenchen.de/corum/#download/).
 
 Regarding other omics types, such as metabolomics, the function `summarize_pathway_level` can be applied in a similar manner to a metabolomics matrix `X` and KEGG metabolic pathways. Metabolite sets from KEGG pathways can also be downloaded with the [KEGG API](https://www.kegg.jp/kegg/rest/keggapi.html).
 
-Once you have downloaded the molecular sets, this information needs to be in the form of a list of lists, i.e., a list of molecular sets, each of which is a list of molecule identifiers (e.g. entrez IDs, PubChem CIDs, etc).
-
-For instance, let's retrieve gene sets from GO terms for cellular compartments. The information can be downloaded from [msigdb](https://data.broadinstitute.org/gsea-msigdb/msigdb/release/):
+After obtaining the molecular sets information, this data has to be formatted as a list of lists (similar to what is obtained from the `get_kegg_sets` function). In other words, you need a structure where you have a list of multiple molecular sets names, and each of these sets is represented as a list of molecule identifiers, such as entrez IDs, PubChem CIDs, Uniprot IDs, etc. 
+For instance, let's retrieve gene sets from GO terms for cellular compartments. The information can be downloaded from the [msigdb link](https://data.broadinstitute.org/gsea-msigdb/msigdb/release/) or accessed programmatically as follows:
 
 ```{r}
 goccdb <- "https://data.broadinstitute.org/gsea-msigdb/msigdb/release/7.5/c5.go.cc.v7.5.entrez.gmt"
@@ -160,50 +197,71 @@ names(gocc) = sapply(as.matrix(downdb), function(x) x[1])
 gocc[1:3]
 ```
 
-Now let's simulate a gene expression matrix X, where gene IDs are codes between 1:10000 (to match entrez IDs), and `summarize_pathway_level` can be applied:
+Now let's simulate a new gene expression matrix X, where gene IDs are codes between 1:10000 (to match entrez IDs), and `summarize_pathway_level` can be applied:
 
 ```{r}
 X_expr <- matrix(abs(rnorm(g * s)), nrow = g, dimnames = list(1:g, paste0("s", 1:s)))
-sd_gocc_expr <- summarize_pathway_level(X_expr, gocc, type="sd")
+sd_gocc_expr <- summarize_pathway_level(X_expr, gocc, type="mds")
 head(sd_gocc_expr)
 ```
 
-A GO cellular compartments activity score is generated via the sd-pooling signal of its gene components.
+GO cellular compartments level expression signatures have been generated via dimension-reduction multi-dimensional scaling (mds) in this case. Note that these are just some examples, and you can apply similar procedures for other types of molecular sets. The package `funOmics` is conceived to be flexible across omics types and types of molecular sets, so you can also tailor or directly create your own list of molecular sets based on specific criteria of your experiments (e.g., include only protein complexes involved in ubiquitination, or define _ad hoc_ metabolic routes involving specific metabolites).
 
-Similarly, `funOmics` is interoperable with other standard Bioconductor classes for gene sets like KEGGREST. See the code snippet below to retrieve KEGG gene sets for humans:
+### A real-world example with real-world data: Summarizing omics data in `SummarizedExperiment` format into KEGG pathway level functional activity scores with NMF dimension-reduction aggregation
 
-```{r}
-library("KEGGREST")
-# Retrieve all pathways from organism
-pathway_ids <- keggList("pathway", organism = "hsa")
-pathway_ids <- names(pathway_ids)
-# Iterate through batches of pathway IDs: this may take ~1 min
-batch_size <- 10  # KEGG limitation: 10 requests at once
-kegg_sets <- list()
-for (i in seq(1, length(pathway_ids), by = batch_size)) {
-  batch_ids <- pathway_ids[i:(min(i + batch_size - 1, length(pathway_ids)))]
-  batch_objs <- keggGet(batch_ids)
-  # Retrieve genes
-  for (obj in batch_objs) {
-    if ("GENE" %in% names(obj)) {
-      entrez_id_indices <- seq(1, length(obj$GENE), by = 2) # Extract Entrez IDs (odd entries)
-      entrez_ids <- obj$GENE[entrez_id_indices]
-      kegg_sets[[obj$PATHWAY_MAP[[1]]]] <- entrez_ids
-    }
-  }
-}
+The examples in the previous sections run on simulated gene expression data. Now that you know where and how to obtain real-world molecular sets, let's see how to use the `funOmics` package on a real-world omics dataset. This is an illustrated example of applying the function `summarize_pathway_level` to aggregate data in `SummarizedExperiment` format (instead of dataframe or matrix format as shown in previous examples 1 and 2) into NMF (Non-Negative Matrix Factorization) dimension-reduction derived activity scores at KEGG pathway level. 
 
-kegg_sets[1:3]
-```
+The NMF-aggregated activity scores values represent the weight (or contribution) of a single underlying basis component or latent factor contributing to the pathway activity (or higher level functional structure in use) for each sample in your data set. Note that rank=1 is used for the basis matrix in the internal NMF dimension-reduction.
 
-And then `summarize_pathway_level` can be applied seamlessly to generate, for instance, pathway-level expression signatures via dimension-reduction multi-dimensional scaling (mds).
+Let's first get an example dataset stored as a SummarizedExperiment from the airway package. This data represents an actual RNA sequencing experiment on four human airway smooth muscle cell lines.
 
 ```{r}
-sd_kegg_expr <- summarize_pathway_level(X_expr, kegg_sets, type="mds")
-head(sd_kegg_expr)
+library(SummarizedExperiment)
+library(airway)
+data(airway)
+airway
 ```
 
-Note that these are just some examples, and you can apply similar procedures for other types of molecular sets.
+The measurement data can be accessed by assay and assays. Note that `SummarizedExperiment` object can contain multiple measurement matrices (all of the same dimension), but in this case `airway` contains only one matrix of RNA sequencing data named `counts`:
+
+```{r}
+assayNames(airway)
+```
+
+```{r}
+head(assay(airway, "counts"))
+dim(assay(airway, "counts"))
+```
+The data matrix contains 63677 genes (or transcripts) and 8 samples. The features names are Ensembl identifiers, let's get a list of KEGG gene sets with Ensembl IDs through the function `get_kegg_sets` provided by `funOmics` package. Note that `get_kegg_sets` can be used to retrieve a list of KEGG gene sets from any organism available, given its abbreviation (e.g., "hsa" for Homo sapiens or "ecj" for Escherichia coli). 
+
+Since `airway` data corresponds to human samples, the parameter `geneid_type` in `get_kegg_sets` can be used to retrieve the molecular sets with Ensembl IDs, and the organism is set to default ("hsa"):
+
+
+```{r}
+kegg_sets <- get_kegg_sets(geneid_type = "ensembl")
+head(kegg_sets)
+```
+
+Now, let's summarize the counts data using NMF data. For this example, let's use the default minimum size of sets (10). Note that when default minsize is used, it is not necessary to use this parameter in the function call:
+
+```{r}
+pathway_activity <- summarize_pathway_level(assay(airway, "counts"), kegg_sets, type = "sd") # note that the NMF operation can take some minutes
+print(paste("Pathway activity score matrix has dimensions:", nrow(pathway_activity), ",", ncol(pathway_activity)))
+```
+
+```{r}
+head(pathway_activity)
+```
+
+The resulting matrix of pathway-level activity scores can be further analyzed as an independent dataset, or can also be integrated with the `airway` `SummarizedExperiment` object in a `MultiAssayExperiment` structure (note that `SummarizedExperiment` can simultaneously manage several experimental assays only if they have the same dimensions, which is not the case here, hence the need for a `MultiAssayExperiment` object). The MultiAssayExperiment library has to be loaded, and a MultiAssayExperiment (`airwayMultiAssay`) can be created and filled with a list of assays-like matrices that may have different dimensions. Here, `airwayMultiAssay` contains the `counts` and the recently generated KEGG pathway activity scores by standard deviation pooling. 
+
+```{r}
+library(MultiAssayExperiment)
+assays_list <- list( counts = assay(airway, "counts"), kegg_sd_agg = pathway_activity)
+airwayMultiAssay <- MultiAssayExperiment(experiments=assays_list)
+colData(airwayMultiAssay) <- colData(airway)
+airwayMultiAssay
+```
 
 # Contact Information
 
