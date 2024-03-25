@@ -213,7 +213,7 @@ The examples in the previous sections run on simulated gene expression data. Now
 
 The NMF-aggregated activity scores values represent the weight (or contribution) of a single underlying basis component or latent factor contributing to the pathway activity (or higher level functional structure in use) for each sample in your data set. Note that rank=1 is used for the basis matrix in the internal NMF dimension-reduction.
 
-Let's first get an example dataset stored as a SummarizedExperiment from the airway package. This data represents an actual RNA sequencing experiment on four human airway smooth muscle cell lines.
+Let's first get an example dataset stored as a `SummarizedExperiment` from the `airway` package. This data represents an actual RNA sequencing experiment on four human airway smooth muscle cell lines.
 
 ```{r}
 library(SummarizedExperiment)
@@ -262,6 +262,8 @@ airwayMultiAssay <- MultiAssayExperiment(experiments=assays_list)
 colData(airwayMultiAssay) <- colData(airway)
 airwayMultiAssay
 ```
+
+In this illustrative example, the RNA sequencing data in `airway` package has directly been summarized or aggregated by the `summarize_pathway_level` function of the `funOmics` package without intermediate processing. Depending on the type of omics data, you may want to apply corresponding processing steps to the omics abundance matrix prior to the aggregation into higher level functional features. You can also "post-process" the resulting summarized matrix as you see appropriate for your analyses and workflows.
 
 # Contact Information
 
