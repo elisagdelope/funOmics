@@ -31,10 +31,15 @@ Elisa Gomez de Lope, Enrico Glaab
 
 Maintainer: Elisa Gomez de Lope (elisa.gomezdelope@uni.lu)
 }
-\references{
-%%  ~~ Literature or other references for background information ~~
-}
+
 \keyword{package}
+\keyword{activity-scores}
+\keyword{aggregation}
+\keyword{functional}
+\keyword{omics}
+\keyword{pathway}
+\keyword{representation}
+\keyword{summary}
 
 %% Uncomment below to imitate parts of library(help = funOmics)
 %\section{The \file{DESCRIPTION} File}{\packageDESCRIPTION{funOmics}}
@@ -42,10 +47,8 @@ Maintainer: Elisa Gomez de Lope (elisa.gomezdelope@uni.lu)
 
 \seealso{
 %%\code{\link[<funOmics>:<funOmics>-package]{<funOmics>}}
-\code{\link{funOmics::summarize_pathway_level}}
-\code{\link{funOmics::get_kegg_sets}}
+\code{\link{summarize_pathway_level}}
+\code{\link{get_kegg_sets}}
 
 }
-\examples{
-%%  ~~ Optional simple examples of the most important functions ~~
-}
+
