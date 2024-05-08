@@ -23,7 +23,10 @@ Imports: NMF,  pathifier, stats, KEGGREST, AnnotationDbi, org.Hs.eg.db, dplyr, s
 Suggests:
     knitr,
     rmarkdown,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    MultiAssayExperiment, 
+    SummarizedExperiment, 
+    airway
 VignetteBuilder: knitr
 VignetteIndexEntry: funomics_vignette Vignette
 biocViews: Software, Transcriptomics, Metabolomics, Proteomics, Pathways, GO, KEGG
