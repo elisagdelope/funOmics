@@ -28,11 +28,16 @@ can be as informative as single molecules.
 }
 \details{
 Notes:
+
 - Different aggregation operators can be used, including summary statistics such as median (default), mean, sd, min, max,
 dimensionality reduction scores such as pca, mds, pathifier, or nmf, and statistical tests such as ttest, wilcoxon test, kolmogorov test.
+
 - The minimum size per molecular set is by default 10 molecules (e.g. genes or metabolites) and can be changed with the parameter minsize.
+
 - If "pathifier" is chosen as pooling type, the `aggby_pathifier` function internally generates a log file named 'pathifierlog.txt' during its execution.
+
 This log file may contain additional information that could be useful for troubleshooting or advanced analysis.
+
 Users typically do not need to interact with this file directly, but it is mentioned here for informational purposes. For more details, this
 function utilizes the \href{https://bioconductor.org/packages/pathifier/}{Pathifier} package.
 }
