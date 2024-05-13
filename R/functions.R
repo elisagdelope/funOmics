@@ -323,9 +323,5 @@ get_kegg_sets <- function(organism="hsa", geneid_type="entrez") {
     kegg_sets <- split(KEGG_pathways$geneID, KEGG_pathways$description)
   }
   return(kegg_sets)
-<<<<<<< HEAD
 }
 
-=======
-}
->>>>>>> dd0ae6f (UPDATE: update functions.R in branch with get_kegg_sets())
