@@ -5,8 +5,10 @@ date: "2024-02-16"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{funOmics}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -54,94 +56,18 @@ To use the `funOmics` R package, load it with the following command:
 library(funOmics)
 ```
 
-## Main Function: `summarize_pathway_level`
-
-You can then access the main function provided by the package, *summarize_pathway_level* with the type of pooling operator desired to be applied for each molecular set. This function has several options for adjusting parameters and settings to suit specific research questions and data types. The available aggregation operators and other parameters options are described in detail in the package documentation. You can also see the documentation for this function with the command:
-
-```{r}
-?funOmics::summarize_pathway_level
-```
-
-Let's see two examples of usage, with a simulated gene expression matrix `X` of dimensions `g*s` (`g` genes and `s` samples), and a list of 100 gene sets `pathways`. The expression values are random positive values sampled from a standard normal distribution. These examples mimic gene expression data and pathway gene sets, but `funOmics` can be used to aggregate other types of omics data and molecular sets, such as metabolomics or proteomics. Go to section [Real data: Where to find molecular sets?](#real-world-data-where-to-find-molecular-sets), to see where to find real molecular sets for different types of omics. Note that if your actual omics data is in `SummarizedExperiment` format, the assay matrix can easily be retrieved as a matrix format (`assay(SEobject)`, see [Example 3](#real-world-data-where-to-find-molecular-sets)).
-
-### Generate simulation data
-
-```{r}
-# Example usage:
-set.seed(1)
-g <- 10000
-s <- 20
-X <- matrix(abs(rnorm(g * s)), nrow = g, dimnames = list(paste0("g", 1:g), paste0("s", 1:s)))
-pathways <- as.list(sample(10:100, size = 100, replace = TRUE))
-pathways <- lapply(pathways, function(s, g) paste0("g", sample(1:g, size = s, replace = FALSE)), g)
-names(pathways) <- paste0("pathway", seq_along(pathways))
-print(paste("Dimensions of omics matrix X:", dim(X)[1], "*", dim(X)[2], "; Length of molecular sets list:", length(pathways)))
-```
-
-```{r}
-print(head(X))
-```
-
-```{r}
-print(head(pathways))
-```
-
-### Example usage 1: apply `summarize_pathway_level` to summarize data with mean pooling and a minimum size of sets
-
-Now we can apply the function `summarize_pathway_level`. In this example, pathway activity is summarized using the mean pooling aggregation for those sets containing at least 12 genes. Note that you can adjust the minsize and type of aggregation as desired.
-
-```{r}
-min <- 12
-pathway_activity <- summarize_pathway_level(X, pathways, type = "mean", minsize = min)
-print(paste("Pathway activity score matrix has dimensions:", nrow(pathway_activity), ",", ncol(pathway_activity)))
-```
-
-From the original matrix `X` with dimensions `[g,s]` (in this example, 1000 genes and 20 samples), `summarize_pathway_level` has generated a pathway-level activity score for each of the 20 samples, for 95 pathways having containing more than 12 genes. Let's see how this matrix looks like:
-
-```{r}
-print(head(pathway_activity))
-```
-
-The resulting matrix of higher-level functional representations looks very similar to the original one, except that the original had many more features (1000 instead of 95).
-
-In this example, 5 of the gene sets in `pathways` has size \< 12. You can check which pathways have been left out and how many genes they had by running the following command:
-
-```{r}
-length_sets <- sapply(pathways, function(p) length(p))
-short_sets <- names(length_sets[length_sets < min])
-print(length_sets[short_sets])
-```
-
-You can also check which genes were found in these sets:
-
-```{r}
-print(pathways[short_sets])
-```
-
-### Example usage 2: apply `summarize_pathway_level` to summarize data with PCA pooling and no minimum size of sets
-
-Using the same matrix `X` and gene sets `pathways`, let's generate aggregated representations using dimension-reduction derived scores from the PCA. The pca-aggregated activity scores values represent the projection of the overall expression of all genes in each pathway onto the first principal component.
-
-```{r}
-pathway_activity <- summarize_pathway_level(X, pathways, type = "pca", minsize = 0)
-print(paste("Pathway activity score matrix has dimensions:", nrow(pathway_activity), ",", ncol(pathway_activity)))
-```
-
-Now from the original matrix `X` with dimensions `[g,s]` (1000 genes and 20 samples), `summarize_pathway_level` has generated a pathway-level activity score for each of the 20 samples for all 100 pathways, since the size of the molecular sets was not restricted. Let's see how this matrix looks like:
-
-```{r}
-print(head(pathway_activity))
-```
-
-
-
 ## Function `get_kegg_sets`
 
 The function `get_kegg_sets` retrieves KEGG pathway gene sets for a specified organism.  It fetches all pathways available for the specified organism from the KEGG database and maps the genes involved in each pathway. Currently, the function only supports choice of gene identifiers (entrez IDs, gene symbols and Ensembl IDs) for Homo sapiens (organism = "hsa") using the `org.Hs.eg.db` package.
 
 `get_kegg_sets` has two parameters: `organism` and `geneid_type`. The parameter `organism` provides the organism abbreviation for which KEGG pathway gene sets are to be retrieved (e.g., "ecj" for E. coli). Default is "hsa" (Homo sapiens). `geneid_type` provides the type of gene IDs to provide and is only used when the organism is "hsa" (Homo sapiens). The default is "entrez"; options are "entrez", "symbol", or "ensembl". 
 
-The function `get_kegg_sets()` returns a list where each element represents a KEGG pathway gene set (i.e., a list of lists). The names of the inner lists correspond to the pathway names.
+The function `get_kegg_sets()` returns a list where each element represents a KEGG pathway gene set (i.e., a list of lists). The names of the inner lists correspond to the pathway names. For further details, the function documentation can be accessed by running the following command:
+
+```{r}
+?funOmics::get_kegg_sets
+```
+
 
 ### Examples usage
 
@@ -169,49 +95,19 @@ ecoli_kegg_sets <- get_kegg_sets(organism = "ecj")
 head(ecoli_kegg_sets)
 ```
 
+## Main Function: `summarize_pathway_level`
 
-
-## Packages & Session information
-
-The `funOmics` package was developed for R version \>= 4.0.3. However, [BioConductor](https://www.bioconductor.org/) release 3.19 runs on R-4.4. See session information and loaded packages below:
+You can then access the main function provided by the package, *summarize_pathway_level* with the type of pooling operator desired to be applied for each molecular set. This function has several options for adjusting parameters and settings to suit specific research questions and data types. The available aggregation operators and other parameters options are described in detail in the package documentation. You can also see the documentation for this function with the command:
 
 ```{r}
-sI <- sessionInfo()
-print(sI, locale = FALSE)
+?funOmics::summarize_pathway_level
 ```
 
-# Real-world data: Where to find molecular sets beyond KEGG? {#real-world-data-where-to-find-molecular-sets}
+Find below some examples of usage with transcriptomics data from the `airway` dataset.
 
-The package `funOmics` interoperates with KEGGREST to retrieve molecular sets from the KEGG through the function `get_kegg_sets` (see description and example above). Other real-world molecular sets can be downloaded from several sources. In terms of gene sets, the Gene Ontology is a versatile resource that covers three domains: cellular components, biological processes and molecular functions. Reactome pathways can also be used to generate higher-level functional representations from omics data. Explore the different releases and download the corresponding gene sets for the different types of GO terms, and reactome pathways [here](https://data.broadinstitute.org/gsea-msigdb/msigdb/release/). You can also aggregate genes into protein complexes, which you can find in the [CORUM database](https://mips.helmholtz-muenchen.de/corum/#download/).
+## Summarizing omics data in `SummarizedExperiment` format from `airway` into KEGG pathway level functional activity scores 
 
-Regarding other omics types, such as metabolomics, the function `summarize_pathway_level` can be applied in a similar manner to a metabolomics matrix `X` and KEGG metabolic pathways. Metabolite sets from KEGG pathways can also be downloaded with the [KEGG API](https://www.kegg.jp/kegg/rest/keggapi.html).
-
-After obtaining the molecular sets information, this data has to be formatted as a list of lists (similar to what is obtained from the `get_kegg_sets` function). In other words, you need a structure where you have a list of multiple molecular sets names, and each of these sets is represented as a list of molecule identifiers, such as entrez IDs, PubChem CIDs, Uniprot IDs, etc. 
-For instance, let's retrieve gene sets from GO terms for cellular compartments. The information can be downloaded from the [msigdb link](https://data.broadinstitute.org/gsea-msigdb/msigdb/release/) or accessed programmatically as follows:
-
-```{r}
-goccdb <- "https://data.broadinstitute.org/gsea-msigdb/msigdb/release/7.5/c5.go.cc.v7.5.entrez.gmt"
-downdb <- sapply(readLines(goccdb), function(x) strsplit(x, "\t")[[1]])
-gocc <- sapply(as.matrix(downdb), function(x) x[3:length(x)])
-names(gocc) = sapply(as.matrix(downdb), function(x) x[1])
-gocc[1:3]
-```
-
-Now let's simulate a new gene expression matrix X, where gene IDs are codes between 1:10000 (to match entrez IDs), and `summarize_pathway_level` can be applied:
-
-```{r}
-X_expr <- matrix(abs(rnorm(g * s)), nrow = g, dimnames = list(1:g, paste0("s", 1:s)))
-sd_gocc_expr <- summarize_pathway_level(X_expr, gocc, type="mds")
-head(sd_gocc_expr)
-```
-
-GO cellular compartments level expression signatures have been generated via dimension-reduction multi-dimensional scaling (mds) in this case. Note that these are just some examples, and you can apply similar procedures for other types of molecular sets. The package `funOmics` is conceived to be flexible across omics types and types of molecular sets, so you can also tailor or directly create your own list of molecular sets based on specific criteria of your experiments (e.g., include only protein complexes involved in ubiquitination, or define _ad hoc_ metabolic routes involving specific metabolites).
-
-### A real-world example with real-world data: Summarizing omics data in `SummarizedExperiment` format into KEGG pathway level functional activity scores with NMF dimension-reduction aggregation
-
-The examples in the previous sections run on simulated gene expression data. Now that you know where and how to obtain real-world molecular sets, let's see how to use the `funOmics` package on a real-world omics dataset. This is an illustrated example of applying the function `summarize_pathway_level` to aggregate data in `SummarizedExperiment` format (instead of dataframe or matrix format as shown in previous examples 1 and 2) into NMF (Non-Negative Matrix Factorization) dimension-reduction derived activity scores at KEGG pathway level. 
-
-The NMF-aggregated activity scores values represent the weight (or contribution) of a single underlying basis component or latent factor contributing to the pathway activity (or higher level functional structure in use) for each sample in your data set. Note that rank=1 is used for the basis matrix in the internal NMF dimension-reduction.
+Here we illustrate through some examples how to apply the function `summarize_pathway_level` to aggregate data in `SummarizedExperiment` format into KEGG pathway-level functional activity scores. Note that the function can also be used to summarize other types of omics data into any higher-level functional representations beyond pathways, such as protein complexes or cellular locations. 
 
 Let's first get an example dataset stored as a `SummarizedExperiment` from the `airway` package. This data represents an actual RNA sequencing experiment on four human airway smooth muscle cell lines.
 
@@ -232,6 +128,7 @@ assayNames(airway)
 head(assay(airway, "counts"))
 dim(assay(airway, "counts"))
 ```
+
 The data matrix contains 63677 genes (or transcripts) and 8 samples. The features names are Ensembl identifiers, let's get a list of KEGG gene sets with Ensembl IDs through the function `get_kegg_sets` provided by `funOmics` package. Note that `get_kegg_sets` can be used to retrieve a list of KEGG gene sets from any organism available, given its abbreviation (e.g., "hsa" for Homo sapiens or "ecj" for Escherichia coli). 
 
 Since `airway` data corresponds to human samples, the parameter `geneid_type` in `get_kegg_sets` can be used to retrieve the molecular sets with Ensembl IDs, and the organism is set to default ("hsa"):
@@ -242,28 +139,198 @@ kegg_sets <- get_kegg_sets(geneid_type = "ensembl")
 head(kegg_sets)
 ```
 
-Now, let's summarize the counts data using NMF data. For this example, let's use the default minimum size of sets (10). Note that when default minsize is used, it is not necessary to use this parameter in the function call:
+#### Example usage 1: Summarize `airway` omics data into dimension-reduction derived activity scores at KEGG pathway level. 
+
+The dimension-reduction operators implemented in `funOmics` include PCA (Principal Component Analysis), NMF (Non-Negative Matrix Factorization), MDS (Multidimensional Scaling), and _pathifier_ deregulation scores from the `pathifier` package derived from principal curves. 
+
+Now, let's summarize the counts data using PCA. The PCA-aggregated activity scores values represent the projection of the overall expression of all genes in each pathway onto the first principal component. For this example, let's use the default minimum size of sets (10). Note that when default value for `minsize` parameter is used, it is not necessary to assign a value for this parameter in the function call:
 
 ```{r}
-pathway_activity <- summarize_pathway_level(assay(airway, "counts"), kegg_sets, type = "sd") # note that the NMF operation can take some minutes
-print(paste("Pathway activity score matrix has dimensions:", nrow(pathway_activity), ",", ncol(pathway_activity)))
+pathway_activity_pca <- summarize_pathway_level(assay(airway, "counts"), kegg_sets, type = "pca")
+print(paste("Pathway activity score matrix has dimensions:", nrow(pathway_activity_pca), ",", ncol(pathway_activity_pca)))
 ```
+
+From the original `airway` data containing 63677 genes (transcripts) and 8 samples, the function `summarize_pathway_level` has generated a pathway-level activity score for each of the 8 samples, for 343 KEGG pathways containing more than 10 genes (16 failed functional aggregations under `minsize`). Let's see how this matrix looks like:
 
 ```{r}
-head(pathway_activity)
+print(head(pathway_activity_pca))
 ```
 
-The resulting matrix of pathway-level activity scores can be further analyzed as an independent dataset, or can also be integrated with the `airway` `SummarizedExperiment` object in a `MultiAssayExperiment` structure (note that `SummarizedExperiment` can simultaneously manage several experimental assays only if they have the same dimensions, which is not the case here, hence the need for a `MultiAssayExperiment` object). The MultiAssayExperiment library has to be loaded, and a MultiAssayExperiment (`airwayMultiAssay`) can be created and filled with a list of assays-like matrices that may have different dimensions. Here, `airwayMultiAssay` contains the `counts` and the recently generated KEGG pathway activity scores by standard deviation pooling. 
+The resulting matrix of higher-level functional representations looks very similar to the original one, except that the original had many more features (63677 instead of 343). This reduction in dimensionality can facilitate the interpretation of the data and the identification of patterns in the samples.
+
+In this illustrative example, the RNA sequencing data in `airway` package has been directly summarized or aggregated by the `summarize_pathway_level` function of the `funOmics` package without intermediate processing. Depending on the type of omics data, you may want to apply corresponding processing steps to the omics abundance matrix prior to the aggregation into higher level functional features. For instance, it is common practice to filter out rows (genes or features) with low counts when analyzing transcriptomics data. This filtering step is often performed to remove genes that are expressed at very low levels and may not be biologically relevant or reliable.
+
+Some aggregation methods, may also have specific assumptions or requirements on the input data. Let's see another example where some filtering is indeed necessary.
+
+`funOmics` allows to generate aggregated representations using dimension-reduction derived scores from the NMF (Non-Negative Matrix Factorization) method. The NMF-aggregated activity scores values represent the weight (or contribution) of a single underlying basis component or latent factor contributing to the pathway activity (or higher level functional structure in use) for each sample in your data set. Rank=1 is used for the basis matrix in the internal NMF dimension-reduction.
+
+Notably, the NMF method does not allow for negative values or null rows in the input matrix. Transcriptomics data in the `airway` dataset are measured as counts, hence the matrix presumably does not contain negative values, but it may contain null rows. To avoid errors, we can filter out rows with less than 10 counts across all samples before applying the NMF method:
+
+```{r}
+print(any(assay(airway, "counts")[rowSums(assay(airway, "counts")) <0, ]))
+X <- assay(airway, "counts")[rowSums(assay(airway, "counts")) >= 10, ]
+```
+
+Let's summarize the filtered counts data using NMF method:
+
+```{r}
+pathway_activity_nmf <- summarize_pathway_level(X, kegg_sets, type = "nmf") # note that the NMF operation can take some minutes
+print(paste("Pathway activity score matrix has dimensions:", nrow(pathway_activity_nmf), ",", ncol(pathway_activity_nmf)))
+```
+
+Let's see how this matrix looks like:
+
+```{r}
+head(pathway_activity_nmf)
+```
+
+
+In this example, `summarize_pathway_level` has generated a pathway-level activity score for each of the 8 samples, for 340 KEGG pathways containing more than 10 genes (here 19 failed functional aggregations under `minsize`, slightly more than for the PCA since some genes were removed in the filtering). Note that the resulting matrix looks similar to that of the previous example in terms of shape and format, but the values are derived from the NMF dimension-reduction method instead of the PCA method. Same analogies apply for other types of aggregation operator; only the interpretation of the resulting functional activity scores will change. 
+
+Note that beyond pre-processing, you can also post-process the resulting summarized matrix as you see appropriate for your analyses and workflows.
+
+
+
+#### Integrating the pathway-level activity scores with the `airway` `SummarizedExperiment` object in a `MultiAssayExperiment` object
+
+The resulting matrix of pathway-level activity scores can be further analyzed as an independent dataset, or can also be integrated with the `airway` `SummarizedExperiment` object in a `MultiAssayExperiment` structure (note that `SummarizedExperiment` can simultaneously manage several experimental assays only if they have the same dimensions, which is not the case here, hence the need for a `MultiAssayExperiment` object). The MultiAssayExperiment library has to be loaded, and a MultiAssayExperiment (`airwayMultiAssay`) can be created and filled with a list of assays-like matrices that may have different dimensions. Here, `airwayMultiAssay` contains the `counts` and the recently generated KEGG pathway activity scores by NMF and PCA pooling. 
 
 ```{r}
 library(MultiAssayExperiment)
-assays_list <- list( counts = assay(airway, "counts"), kegg_sd_agg = pathway_activity)
+assays_list <- list( counts = assay(airway, "counts"), kegg_nmf_agg = pathway_activity_nmf, kegg_pca_agg = pathway_activity_pca)
 airwayMultiAssay <- MultiAssayExperiment(experiments=assays_list)
 colData(airwayMultiAssay) <- colData(airway)
 airwayMultiAssay
 ```
 
-In this illustrative example, the RNA sequencing data in `airway` package has directly been summarized or aggregated by the `summarize_pathway_level` function of the `funOmics` package without intermediate processing. Depending on the type of omics data, you may want to apply corresponding processing steps to the omics abundance matrix prior to the aggregation into higher level functional features. You can also "post-process" the resulting summarized matrix as you see appropriate for your analyses and workflows.
+
+
+
+#### Example usage 2: Summarize `airway` omics data with summary statistics and a minimum size of the KEGG gene sets
+
+Here we will apply the function `summarize_pathway_level` to summarize pathway activity using the mean pooling aggregation for those sets containing at least 12 genes. Remember that you can adjust the parameters `minsize` and `type` of aggregation as desired.
+
+```{r}
+min <- 12
+pathway_activity <- summarize_pathway_level(assay(airway, "counts"), kegg_sets, type = "mean", minsize = min)
+print(paste("Pathway activity score matrix has dimensions:", nrow(pathway_activity), ",", ncol(pathway_activity)))
+```
+
+Now from the original `airway` data of dimensions 63677 genes (transcripts) x 8 samples, `summarize_pathway_level` has generated through mean-pooling a pathway-level activity score matrix of 341 pathways x 8 samples, for gene sets containing more than 12 genes. 
+
+```{r}
+print(head(pathway_activity))
+```
+
+In this example, 18 of the gene sets in `kegg_sets` has size \< 12. You can check which pathways have been left out and how many genes they had by running the following command:
+
+```{r}
+length_sets <- sapply(kegg_sets, function(p) length(p))
+short_sets <- names(length_sets[length_sets < min])
+print(length_sets[short_sets])
+```
+
+You can also check which genes were found in these sets:
+
+```{r}
+print(kegg_sets[short_sets])
+```
+
+Other summary statistics can be used for the aggregation, such as median, standard deviation, min, or max. See below some more examples with varying number of genes in the gene sets:
+
+```{r}
+min <- 15
+pathway_activity <- summarize_pathway_level(assay(airway, "counts"), kegg_sets, type = "sd", minsize = min)
+print(paste("Pathway activity score matrix has dimensions:", nrow(pathway_activity), ",", ncol(pathway_activity)))
+head(pathway_activity)
+```
+
+```{r}
+min <- 7
+pathway_activity <- summarize_pathway_level(assay(airway, "counts"), kegg_sets, type = "median", minsize = min)
+print(paste("Pathway activity score matrix has dimensions:", nrow(pathway_activity), ",", ncol(pathway_activity)))
+head(pathway_activity)
+```
+
+
+
+#### Example usage 3: Summarize `airway` omics data with test statistics
+
+Using the same `airway` data and gene sets `kegg_sets` from previous examples, let's generate aggregated representations using test statistics. These operators allow to compare the measurements for each sample between the molecules in each functional set and the molecules not in the given functional set. They may help identify functionally related genes/molecules that exhibit coordinated or significant deviations in their expression patterns across samples. Currently, the implemented available statistical tests in `funOmics` are the t-test, Wilcoxon test, and Kolmogorov–Smirnov test. 
+
+
+When using test statistics, one has to be mindful about the assumptions of the test and the distribution of the data. For instance, the t-test assumes that the data is normally distributed and compares the means of two groups; the Wilcoxon test assumes that the data is continuous and symmetric, and compares the medians of two groups; the Kolmogorov–Smirnov test is a non-parametric test that does not assume any distribution and compares the entire cumulative distribution functions (i.e, in this context, the overall shapes of the distributions of values) of two groups. Here we provide an example using the t-test statistic:
+
+
+```{r}
+pathway_activity <- summarize_pathway_level(assay(airway, "counts"), kegg_sets, type = "ttest", minsize = 15)
+print(paste("Pathway activity score matrix has dimensions:", nrow(pathway_activity), ",", ncol(pathway_activity)))
+```
+
+In this case, `summarize_pathway_level` has generated a pathway-level activity score for each of the 8 samples, for 339 pathways containing more than 15 genes. The resulting test statistic for each sample represents the difference between the two groups (i.e., the functional set and rest of molecules) for each gene or molecule. These statistics can be then be used as features for further analysis or modeling:
+
+```{r}
+print(head(pathway_activity))
+```
+
+Importantly, this is just an illustrative example. In real-world experiments, you may have to consider that genes or molecules in a certain set might be longer or naturally more abundant and therefore might have higher overall read counts (abundance) compared to genes or molecules outside the set, even if their expression levels (as a proportion of transcripts) are similar. Normalizing the expression counts for all genes (including those within and outside the sets) using a suitable method (e.g., library size normalization, transcript length normalization) can help make the expression levels more comparable before performing the aggregation and set comparisons.
+
+
+## Molecular sets beyond KEGG and omics matrices beyond `SummarizedExperiment`
+
+The package `funOmics` interoperates with KEGGREST to retrieve molecular sets from the KEGG through the function `get_kegg_sets` (see description and example above). Other real-world molecular sets can be downloaded from several sources. In terms of gene sets, the Gene Ontology is a versatile resource that covers three domains: cellular components, biological processes and molecular functions. Reactome pathways can also be used to generate higher-level functional representations from omics data. Explore the different releases and download the corresponding gene sets for the different types of GO terms, and reactome pathways [here](https://data.broadinstitute.org/gsea-msigdb/msigdb/release/). You can also aggregate genes into protein complexes, which you can find in the [CORUM database](https://mips.helmholtz-muenchen.de/corum/#download/).
+
+Regarding other omics types, such as metabolomics, the function `summarize_pathway_level` can be applied in a similar manner to a metabolomics matrix `X` and KEGG metabolic pathways. Metabolite sets from KEGG pathways can also be downloaded with the [KEGG API](https://www.kegg.jp/kegg/rest/keggapi.html).
+
+After obtaining the molecular sets information, this data has to be formatted as a list of lists (similar to what is obtained from the `get_kegg_sets` function). In other words, you need a structure where you have a list of multiple molecular sets names, and each of these sets is represented as a list of molecule identifiers, such as entrez IDs, PubChem CIDs, Uniprot IDs, etc. 
+For instance, let's retrieve gene sets from GO terms for cellular compartments. The information can be downloaded from the [msigdb link](https://data.broadinstitute.org/gsea-msigdb/msigdb/release/) or accessed programmatically as follows:
+
+```{r}
+goccdb <- "https://data.broadinstitute.org/gsea-msigdb/msigdb/release/7.5/c5.go.cc.v7.5.entrez.gmt"
+downdb <- sapply(readLines(goccdb), function(x) strsplit(x, "\t")[[1]])
+gocc <- sapply(as.matrix(downdb), function(x) x[3:length(x)])
+names(gocc) = sapply(as.matrix(downdb), function(x) x[1])
+gocc[1:3]
+```
+
+As you can see, the resulting `gocc` object is a list of lists where each element represents a GO cellular compartment gene set.
+
+Notably, omics data does not always come from a `SummarizedExperiment` object. Some times, it is imported from a csv file, generated through other pre-processing steps and packages, or even generated from a simulation. In these cases, the data has to be formatted as a matrix of dimensions `g*s` (`g` molecules and `s` samples).
+
+Let's see an example usage of the GO cellular compartments gene sets `gocc` where omics data is of type matrix. For this purpose, we will create an expression matrix where the expression values are random positive values sampled from a standard normal distribution. Please, note that `funOmics` can be used to aggregate other types of omics data and molecular sets, such as metabolomics or proteomics that may have a similar range of values.
+
+Let's simulate a gene expression matrix `X_expr`, where gene IDs are codes between 1:10000 (to match entrez IDs), and `summarize_pathway_level` can be applied:
+
+```{r}
+# Example usage:
+set.seed(1)
+g <- 10000
+s <- 20
+X_expr <- matrix(abs(rnorm(g * s)), nrow = g, dimnames = list(1:g, paste0("s", 1:s)))
+print(paste("Dimensions of omics matrix X:", dim(X_expr)[1], "*", dim(X_expr)[2]))
+head(X_expr)
+```
+
+Now, let's summarize the expression data using standard deviation pooling for the GO cellular compartments gene sets. We won't specify a minimum size of sets in this case, so the default `minsize` of 10 is used:
+
+```{r}
+sd_gocc_expr <- summarize_pathway_level(X_expr, gocc, type="sd")
+head(sd_gocc_expr)
+```
+
+GO cellular compartments level expression signatures have been generated via standard deviation aggregation. You can apply similar procedures for other types of molecular sets, aggregation functions and omics types. The package `funOmics` is conceived to be flexible across omics types and types of molecular sets, so you can also tailor or directly create your own list of molecular sets based on specific criteria of your experiments (e.g., include only protein complexes involved in ubiquitination, or define _ad hoc_ metabolic routes involving specific metabolites).
+
+
+
+## Packages & Session information
+
+The `funOmics` package was developed for R version \>= 4.0.3. However, [BioConductor](https://www.bioconductor.org/) release 3.19 runs on R-4.4. See session information and loaded packages below:
+
+```{r}
+sI <- sessionInfo()
+print(sI, locale = FALSE)
+```
+
 
 # Contact Information
 
