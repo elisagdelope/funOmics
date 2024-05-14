@@ -1,6 +1,6 @@
 Package: funOmics
 Title: Aggregating Omics Data into Higher-Level Functional Representations
-Version: 0.99.6
+Version: 0.99.7
 Authors@R: c(
            person("Elisa", "Gomez de Lope", role = c("aut", "cre"), email = "elisa.gomezdelope@uni.lu",comment=c(ORCID="0000-0002-7115-7393")),
            person("Enrico", "Glaab", role = "ctb", email = "enrico.glaab@uni.lu", comment = c(ORCID="0000-0003-3977-7469")))
