@@ -40,8 +40,7 @@
 #' names(pathways) <- paste0("pathway", seq_along(pathways))
 #' pathway_activity <- summarize_pathway_level(X, pathways, type = "mean", minsize = 12)
 
-#' @importFrom NMF nmf
-#' @importFrom NMF coef
+#' @import NMF 
 #' @importFrom pathifier quantify_pathways_deregulation
 #' @importFrom stats t.test wilcox.test ks.test
 #' @importFrom stats prcomp
@@ -170,7 +169,7 @@ aggby_dimred <- function(X, aggtype) {
          },
          nmf = {
            nmf_res <- NMF::nmf(X, rank = 1)
-           NMF::coef(nmf_res)
+           coef(nmf_res)
          }
   )
 }
