@@ -105,7 +105,7 @@ summarize_pathway_level <- function(omicsmat, sets = NULL, type = "mean", minsiz
       } else if (type %in% c("pca", "mds", "nmf")) {
         rep_vec <- aggby_dimred(ifunmat, type)
       } else if (type %in% c("ttest", "wilcox", "kolmogorov")) {
-        rep_vec <- aggby_test(ifunmat, type, mapid, notna)
+        rep_vec <- aggby_test(omicsmat, ifunmat, type, mapid, notna)
       } else {
         stop(sprintf("Aggregation type %s is not supported.\nPlease check the list of supported aggregation operators.", type))
       }
@@ -176,12 +176,12 @@ aggby_dimred <- function(X, aggtype) {
 
 
 #' @keywords internal
-aggby_test <- function(X, aggtype, mapid, notna) {
+aggby_test <- function(X, pw_x, aggtype, mapid, notna) {
   switch(aggtype,
          ttest = {
            path_outmat <- X[-mapid[notna], ]
-           path_ttestres <- vapply(seq_len(ncol(X)), function(x) {
-             dat <- t.test(X[, x], path_outmat[, x], alternative = "greater")
+           path_ttestres <- vapply(seq_len(ncol(pw_x)), function(x) {
+             dat <- t.test(pw_x[, x], path_outmat[, x], alternative = "greater")
              list(dat$stat, dat$p.value)
            },
            FUN.VALUE = list(stat = numeric(1), p.value = numeric(1))
@@ -192,8 +192,8 @@ aggby_test <- function(X, aggtype, mapid, notna) {
          },
          wilcox = {
            path_outmat <- X[-mapid[notna], ]
-           path_wxtestres <- vapply(seq_len(ncol(X)), function(x) {
-             dat <- wilcox.test(X[, x], path_outmat[, x], alternative = "greater")
+           path_wxtestres <- vapply(seq_len(ncol(pw_x)), function(x) {
+             dat <- wilcox.test(pw_x[, x], path_outmat[, x], alternative = "greater")
              list(dat$stat, dat$p.value)
            },
            FUN.VALUE = list(stat = numeric(1), p.value = numeric(1))
@@ -204,8 +204,8 @@ aggby_test <- function(X, aggtype, mapid, notna) {
          },
          kolmogorov = {
            path_outmat <- X[-mapid[notna], ]
-           path_kstestres <- vapply(seq_len(ncol(X)), function(x) {
-             dat <- ks.test(X[, x], path_outmat[, x], alternative = "greater")
+           path_kstestres <- vapply(seq_len(ncol(pw_x)), function(x) {
+             dat <- ks.test(pw_x[, x], path_outmat[, x], alternative = "greater")
              list(dat$stat, dat$p.value)
            },
            FUN.VALUE = list(stat = numeric(1), p.value = numeric(1))
