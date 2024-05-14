@@ -121,6 +121,7 @@ summarize_pathway_level <- function(omicsmat, sets = NULL, type = "mean", minsiz
   if (count >= 1) {
     funmat <- funmat[seq_len(count), ]
     colnames(funmat) <- colnames(omicsmat)
+    message(paste("Functional activity score matrix has dimensions:", dim(funmat)[1], ",", dim(funmat)[2]))
     return(funmat)
   } else {
     message("No functional molecular sets met the criteria.")
@@ -324,4 +325,38 @@ get_kegg_sets <- function(organism="hsa", geneid_type="entrez") {
   }
   return(kegg_sets)
 }
+
+
+
+#' Retrieve details and information about short molecular sets
+#'
+#' This function identifies molecular sets with sizes less than a specified threshold
+#' and returns information about these sets.
+#'
+#' @param sets A list of molecular sets.
+#' @param minsize The minimum size threshold for  sets.
+#' @return A list containing information about short molecular sets:
+#'   \item{short_sets}{Names of the short molecular sets.}
+#'   \item{lengths}{Lengths of the short molecular sets.}
+#'   \item{genes}{Short molecular sets themselves.}
+#' @details This function identifies molecular sets in the input list that have sizes
+#'   less than the specified minimum size (\code{minsize}). It returns a list
+#'   containing the names, lengths, and molecules of these short molecular sets.
+#' @examples
+#' ex_sets <- list(set1 = c("mol1", "mol2"), set2 = c("mol3", "mol4", "mol5"))
+#' short_sets_info <- short_sets_detail(ex_sets, minsize = 3)
+#' @export
+#' 
+short_sets_detail <- function(sets, minsize) {
+  short_sets_names <- names(Filter(function(p) length(p) < minsize, sets))
+  if (length(short_sets_names) > 0) {
+    short_sets <- sets[short_sets_names]
+    short_sets_lengths <- sapply(short_sets, length)
+    return(list(short_sets = short_sets_names, short_sets_lengths = short_sets_lengths, short_sets_molecules = short_sets))
+  } else {
+    message("No molecular sets have sizes less than", minsize)
+    return(NULL)
+  }
+}
+
 
