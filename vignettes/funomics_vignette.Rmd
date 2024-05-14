@@ -56,7 +56,7 @@ To use the `funOmics` R package, load it with the following command:
 library(funOmics)
 ```
 
-## Function `get_kegg_sets`
+## Functions `get_kegg_sets` and `short_sets_detail`
 
 The function `get_kegg_sets` retrieves KEGG pathway gene sets for a specified organism.  It fetches all pathways available for the specified organism from the KEGG database and maps the genes involved in each pathway. Currently, the function only supports choice of gene identifiers (entrez IDs, gene symbols and Ensembl IDs) for Homo sapiens (organism = "hsa") using the `org.Hs.eg.db` package.
 
@@ -66,6 +66,12 @@ The function `get_kegg_sets()` returns a list where each element represents a KE
 
 ```{r}
 ?funOmics::get_kegg_sets
+```
+
+The function `short_sets_detail` identifies molecular sets with sizes less than a specified threshold, and returns information about these short sets. It has two parameters: `sets` and `minsize`. The parameter `sets` is a list of molecular sets, like that obtained from the function `get_kegg_sets`. The parameter `minsize` provides the minimum size threshold for sets to be categorized as "short" and subsequently processed to extract information. Function documentation can be accessed by running:
+
+```{r}
+?funOmics::short_sets_detail
 ```
 
 
@@ -147,7 +153,6 @@ Now, let's summarize the counts data using PCA. The PCA-aggregated activity scor
 
 ```{r}
 pathway_activity_pca <- summarize_pathway_level(assay(airway, "counts"), kegg_sets, type = "pca")
-print(paste("Pathway activity score matrix has dimensions:", nrow(pathway_activity_pca), ",", ncol(pathway_activity_pca)))
 ```
 
 From the original `airway` data containing 63677 genes (transcripts) and 8 samples, the function `summarize_pathway_level` has generated a pathway-level activity score for each of the 8 samples, for 343 KEGG pathways containing more than 10 genes (16 failed functional aggregations under `minsize`). Let's see how this matrix looks like:
@@ -222,19 +227,21 @@ Now from the original `airway` data of dimensions 63677 genes (transcripts) x 8 
 print(head(pathway_activity))
 ```
 
-In this example, 18 of the gene sets in `kegg_sets` has size \< 12. You can check which pathways have been left out and how many genes they had by running the following command:
+In this example, 18 of the gene sets in `kegg_sets` have size \< 12. You can then use the function `short_sets_detail` to get information about which pathways have been left out, how many genes they had, and which genes are involved in these shorter sets:
 
 ```{r}
-length_sets <- sapply(kegg_sets, function(p) length(p))
-short_sets <- names(length_sets[length_sets < min])
-print(length_sets[short_sets])
+short_sets <- short_sets_detail(kegg_sets, min)
+print(short_sets$short_sets)
 ```
-
-You can also check which genes were found in these sets:
 
 ```{r}
-print(kegg_sets[short_sets])
+print(short_sets$short_sets_lengths)
 ```
+
+```{r}
+print(short_sets$short_sets_molecules)
+```
+
 
 Other summary statistics can be used for the aggregation, such as median, standard deviation, min, or max. See below some more examples with varying number of genes in the gene sets:
 
@@ -288,16 +295,22 @@ For instance, let's retrieve gene sets from GO terms for cellular compartments. 
 ```{r}
 goccdb <- "https://data.broadinstitute.org/gsea-msigdb/msigdb/release/7.5/c5.go.cc.v7.5.entrez.gmt"
 downdb <- sapply(readLines(goccdb), function(x) strsplit(x, "\t")[[1]])
-gocc <- sapply(as.matrix(downdb), function(x) x[3:length(x)])
-names(gocc) = sapply(as.matrix(downdb), function(x) x[1])
-gocc[1:3]
+gocc_sets <- sapply(as.matrix(downdb), function(x) x[3:length(x)])
+names(gocc_sets) = sapply(as.matrix(downdb), function(x) x[1])
+gocc_sets[1:3]
 ```
 
-As you can see, the resulting `gocc` object is a list of lists where each element represents a GO cellular compartment gene set.
+As you can see, the resulting `gocc_sets` object is a list of lists where each element represents a GO cellular compartment gene set. Here you can also use the function `short_sets_detail` to get information about which and how many pathways contain less than a given number of molecules:
+
+```{r}
+min <- 8
+short_sets <- short_sets_detail(gocc_sets, min)
+print(head(short_sets$short_sets_molecules))
+```
 
 Notably, omics data does not always come from a `SummarizedExperiment` object. Some times, it is imported from a csv file, generated through other pre-processing steps and packages, or even generated from a simulation. In these cases, the data has to be formatted as a matrix of dimensions `g*s` (`g` molecules and `s` samples).
 
-Let's see an example usage of the GO cellular compartments gene sets `gocc` where omics data is of type matrix. For this purpose, we will create an expression matrix where the expression values are random positive values sampled from a standard normal distribution. Please, note that `funOmics` can be used to aggregate other types of omics data and molecular sets, such as metabolomics or proteomics that may have a similar range of values.
+Let's see an example usage of the GO cellular compartments gene sets `gocc_sets` where omics data is of type matrix. For this purpose, we will create an expression matrix where the expression values are random positive values sampled from a standard normal distribution. Please, note that `funOmics` can be used to aggregate other types of omics data and molecular sets, such as metabolomics or proteomics that may have a similar range of values.
 
 Let's simulate a gene expression matrix `X_expr`, where gene IDs are codes between 1:10000 (to match entrez IDs), and `summarize_pathway_level` can be applied:
 
@@ -314,7 +327,7 @@ head(X_expr)
 Now, let's summarize the expression data using standard deviation pooling for the GO cellular compartments gene sets. We won't specify a minimum size of sets in this case, so the default `minsize` of 10 is used:
 
 ```{r}
-sd_gocc_expr <- summarize_pathway_level(X_expr, gocc, type="sd")
+sd_gocc_expr <- summarize_pathway_level(X_expr, gocc_sets, type="sd", minsize=8)
 head(sd_gocc_expr)
 ```
 
