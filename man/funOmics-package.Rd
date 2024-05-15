@@ -9,7 +9,6 @@ Aggregating Omics Data into Higher-Level Functional Representations
 The `funOmics` package aggregates or summarizes omics data into higher-level functional representations such as GO terms, gene sets, or KEGG metabolic pathways. The aggregated data matrix represents functional activity scores that facilitate the analysis of functional molecular sets while allowing dimensionality reduction and providing easier and faster biological interpretations. Coordinated functional activity scores can be as informative as single molecules!
 }
 \details{
-%%  ~~ An overview of how to use the package, ~~
 
 The package offers functionalities for:
 \itemize{

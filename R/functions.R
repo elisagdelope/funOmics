@@ -40,7 +40,11 @@
 #' names(pathways) <- paste0("pathway", seq_along(pathways))
 #' pathway_activity <- summarize_pathway_level(X, pathways, type = "mean", minsize = 12)
 
+<<<<<<< HEAD
 #' @import NMF 
+=======
+#' @importFrom NMF nmf coef
+>>>>>>> devel
 #' @importFrom pathifier quantify_pathways_deregulation
 #' @importFrom stats t.test wilcox.test ks.test
 #' @importFrom stats prcomp
@@ -350,7 +354,7 @@ short_sets_detail <- function(sets, minsize) {
   short_sets_names <- names(Filter(function(p) length(p) < minsize, sets))
   if (length(short_sets_names) > 0) {
     short_sets <- sets[short_sets_names]
-    short_sets_lengths <- sapply(short_sets, length)
+    short_sets_lengths <- vapply(short_sets, length, FUN.VALUE = numeric(1))
     return(list(short_sets = short_sets_names, short_sets_lengths = short_sets_lengths, short_sets_molecules = short_sets))
   } else {
     message("No molecular sets have sizes less than", minsize)
