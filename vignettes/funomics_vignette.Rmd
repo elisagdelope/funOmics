@@ -179,6 +179,7 @@ X <- assay(airway, "counts")[rowSums(assay(airway, "counts")) >= 10, ]
 Let's summarize the filtered counts data using NMF method:
 
 ```{r}
+library(NMF)
 pathway_activity_nmf <- summarize_pathway_level(X, kegg_sets, type = "nmf") # note that the NMF operation can take some minutes
 print(paste("Pathway activity score matrix has dimensions:", nrow(pathway_activity_nmf), ",", ncol(pathway_activity_nmf)))
 ```
